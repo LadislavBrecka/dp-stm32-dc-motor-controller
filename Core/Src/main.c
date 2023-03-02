@@ -46,6 +46,8 @@ TIM_HandleTypeDef htim2;
 /* USER CODE BEGIN PV */
 
 uint8_t ui8TimPulse = 90;  // set duty cycle to 50% initially
+uint16_t POT_VALUE = 0;
+uint16_t PWM_STRIDE = 0;
 
 /* USER CODE END PV */
 
@@ -60,6 +62,15 @@ static void MX_ADC1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+	POT_VALUE = HAL_ADC_GetValue(&hadc1);
+	PWM_STRIDE = ( ( (PWM_MAX - PWM_MIN) * (POT_VALUE - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
+	if (PWM_STRIDE > PWM_MAX) PWM_STRIDE = PWM_MAX;
+	if (PWM_STRIDE < PWM_MIN) PWM_STRIDE = PWM_MIN;
+	ui8TimPulse = PWM_STRIDE;
+}
 
 /* USER CODE END 0 */
 
@@ -101,37 +112,18 @@ int main(void)
 
   HAL_GPIO_WritePin(MOTOR_DIRECTION_1_GPIO_Port, MOTOR_DIRECTION_1_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(MOTOR_DIRECTION_2_GPIO_Port, MOTOR_DIRECTION_2_Pin, GPIO_PIN_RESET);
-  // Calibrate The ADC On Power-Up For Better Accuracy
 
+  HAL_ADC_Start_IT(&hadc1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint16_t POT_VALUE = 0;
-  uint16_t PWM_STRIDE = 0;
 
   while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-	// Start ADC Conversion
-	HAL_ADC_Start(&hadc1);
-	// Poll ADC1 Peripheral & TimeOut = 1mSec
-	HAL_ADC_PollForConversion(&hadc1, 1);
-	// Read The ADC Conversion Result & Map It To PWM DutyCycle
-	POT_VALUE = HAL_ADC_GetValue(&hadc1);
-
-	// Convert to PWM Duty cycle from PWM_MIN to PWM_MAX
-	PWM_STRIDE = ( ( (PWM_MAX - PWM_MIN) * (POT_VALUE - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
-
-	if (PWM_STRIDE > 100) PWM_STRIDE = 100;
-	if (PWM_STRIDE < 70) PWM_STRIDE = 70;
-
-	ui8TimPulse = PWM_STRIDE;
-
-//	TIM2->CCR1 = (AD_RES<<4);
-	HAL_Delay(1);
+	HAL_ADC_Start_IT(&hadc1);
 
   }
   /* USER CODE END 3 */
@@ -199,7 +191,7 @@ static void MX_ADC1_Init(void)
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.ScanConvMode = DISABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
