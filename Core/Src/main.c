@@ -42,6 +42,7 @@ ADC_HandleTypeDef hadc1;
 
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart2;
 
@@ -55,13 +56,20 @@ uint16_t PWM_STRIDE = 0;
 #define DONE   1
 #define F_CLK  16000000UL
 
-uint8_t gu8_State = IDLE;
-char gu8_MSG[35] = {'\0'};
-uint32_t gu32_T1 = 0;
-uint32_t gu32_T2 = 0;
-uint32_t gu32_Ticks = 0;
-uint16_t gu16_TIM3_OVC = 0;
-uint32_t gu32_Freq = 0;
+char 		hal_MSG[100] = {'\0'};
+uint8_t 	hal1_State = IDLE;
+uint32_t 	hal1_T1 = 0;
+uint32_t 	hal1_T2 = 0;
+uint32_t 	hal1_Ticks = 0;
+uint16_t 	hal1_TIM3_OVC = 0;
+uint32_t 	hal1_Freq = 0;
+
+uint8_t 	hal2_State = IDLE;
+uint32_t 	hal2_T1 = 0;
+uint32_t 	hal2_T2 = 0;
+uint32_t 	hal2_Ticks = 0;
+uint16_t 	hal2_TIM4_OVC = 0;
+uint32_t 	hal2_Freq = 0;
 
 /* USER CODE END PV */
 
@@ -72,6 +80,7 @@ static void MX_TIM2_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM4_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -112,6 +121,7 @@ int main(void)
   MX_TIM2_Init();
   MX_ADC1_Init();
   MX_TIM3_Init();
+  MX_TIM4_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
@@ -125,6 +135,10 @@ int main(void)
   // timer for measuring HAL 1 frequency
   HAL_TIM_Base_Start_IT(&htim3);
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
+
+  // timer for measuring HAL 2 frequency
+  HAL_TIM_Base_Start_IT(&htim4);
+  HAL_TIM_IC_Start_IT(&htim4, TIM_CHANNEL_1);
 
   /* USER CODE END 2 */
 
@@ -359,6 +373,64 @@ static void MX_TIM3_Init(void)
 }
 
 /**
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_IC_InitTypeDef sConfigIC = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 0;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 65535;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_IC_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim4, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -429,33 +501,64 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
 {
-	if (htim != &htim3) return ;
 
-    if(gu8_State == IDLE)
-    {
-        gu32_T1 = TIM3->CCR1;
-        gu16_TIM3_OVC = 0;
-        gu8_State = DONE;
-    }
-    else if(gu8_State == DONE)
-    {
-        gu32_T2 = TIM3->CCR1;
-        gu32_Ticks = (gu32_T2 + (gu16_TIM3_OVC * 65536)) - gu32_T1;
-        gu32_Freq = (uint32_t)(F_CLK/gu32_Ticks);
-        gu8_State = IDLE;
-        if(gu32_Freq != 0)
+	switch((uint32_t)htim->Instance)
+	{
+	case (uint32_t)TIM3: // TIM3 is measuring HAL 1 frequency
+		// code for measuring HAL 1
+		if(hal1_State == IDLE)
 		{
-			sprintf(gu8_MSG, "Frequency = %lu Hz\n\r", gu32_Freq);
-			HAL_UART_Transmit(&huart2, (uint8_t *)gu8_MSG, sizeof(gu8_MSG), 100);
+			hal1_T1 = TIM3->CCR1;
+			hal1_TIM3_OVC = 0;
+			hal1_State = DONE;
 		}
-    }
+		else if(hal1_State == DONE)
+		{
+			hal1_T2 = TIM3->CCR1;
+			hal1_Ticks = (hal1_T2 + (hal1_TIM3_OVC * 65536)) - hal1_T1;
+			hal1_Freq = (uint32_t)(F_CLK/hal1_Ticks);
+			hal1_State = IDLE;
+		}
+
+		// displaying frequencies via USART is done only in one of the measurement
+		// this is to prevent double writing to buffer
+		if(hal1_Freq != 0 && hal2_Freq != 0)
+		{
+			sprintf(hal_MSG, "Frequency = %lu Hz ; %lu Hz\n\r", hal1_Freq, hal2_Freq);
+			HAL_UART_Transmit(&huart2, (uint8_t *)hal_MSG, sizeof(hal_MSG), 100);
+		}
+		break;
+
+	case (uint32_t)TIM4:  // TIM4 is measuring HAL 2 frequency
+		// code for measuring HAL 2
+		if(hal2_State == IDLE)
+		{
+			hal2_T1 = TIM4->CCR1;
+			hal2_TIM4_OVC = 0;
+			hal2_State = DONE;
+		}
+		else if(hal2_State == DONE)
+		{
+			hal2_T2 = TIM4->CCR1;
+			hal2_Ticks = (hal2_T2 + (hal2_TIM4_OVC * 65536)) - hal2_T1;
+			hal2_Freq = (uint32_t)(F_CLK/hal2_Ticks);
+			hal2_State = IDLE;
+		}
+		break;
+	}
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-	if (htim != &htim3) return ;
-
-    gu16_TIM3_OVC++;
+	switch((uint32_t)htim->Instance)
+	{
+	case (uint32_t)TIM3: // TIM3 is measuring HAL 1 frequency
+		hal1_TIM3_OVC++;
+		break;
+	case (uint32_t)TIM4: // TIM4 is measuring HAL 2 frequency
+		hal2_TIM4_OVC++;
+		break;
+	}
 }
 
 /* USER CODE END 4 */
