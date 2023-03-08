@@ -64,6 +64,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define ADC_1_PWM_TRIMER_Pin GPIO_PIN_7
+#define ADC_1_PWM_TRIMER_GPIO_Port GPIOA
 #define TIMER_2_MOTOR_PWM_Pin GPIO_PIN_3
 #define TIMER_2_MOTOR_PWM_GPIO_Port GPIOB
 #define MOTOR_DIRECTION_1_Pin GPIO_PIN_4

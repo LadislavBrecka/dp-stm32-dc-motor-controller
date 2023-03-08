@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include<stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,19 +35,33 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
+
+UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
 uint8_t ui8TimPulse = 90;  // set duty cycle to 50% initially
 uint16_t POT_VALUE = 0;
 uint16_t PWM_STRIDE = 0;
+
+#define IDLE   0
+#define DONE   1
+#define F_CLK  16000000UL
+
+uint8_t gu8_State = IDLE;
+char gu8_MSG[35] = {'\0'};
+uint32_t gu32_T1 = 0;
+uint32_t gu32_T2 = 0;
+uint32_t gu32_Ticks = 0;
+uint16_t gu16_TIM3_OVC = 0;
+uint32_t gu32_Freq = 0;
 
 /* USER CODE END PV */
 
@@ -56,21 +70,14 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_TIM3_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-	POT_VALUE = HAL_ADC_GetValue(&hadc1);
-	PWM_STRIDE = ( ( (PWM_MAX - PWM_MIN) * (POT_VALUE - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
-	if (PWM_STRIDE > PWM_MAX) PWM_STRIDE = PWM_MAX;
-	if (PWM_STRIDE < PWM_MIN) PWM_STRIDE = PWM_MIN;
-	ui8TimPulse = PWM_STRIDE;
-}
 
 /* USER CODE END 0 */
 
@@ -104,20 +111,32 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   MX_ADC1_Init();
+  MX_TIM3_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  // timer for generating PWM signal
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-  TIM2->CCR2 = (htim2.Init.Period * ui8TimPulse) / 100u;
 
-  HAL_GPIO_WritePin(MOTOR_DIRECTION_1_GPIO_Port, MOTOR_DIRECTION_1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(MOTOR_DIRECTION_2_GPIO_Port, MOTOR_DIRECTION_2_Pin, GPIO_PIN_RESET);
-
+  // adc for scanning trimmer set value
   HAL_ADC_Start_IT(&hadc1);
+
+  // timer for measuring HAL 1 frequency
+  HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  // setting up default pwm stride
+  TIM2->CCR2 = (htim2.Init.Period * ui8TimPulse) / 100u;
+
+  // setting up default motor direction
+  HAL_GPIO_WritePin(MOTOR_DIRECTION_1_GPIO_Port, MOTOR_DIRECTION_1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(MOTOR_DIRECTION_2_GPIO_Port, MOTOR_DIRECTION_2_Pin, GPIO_PIN_RESET);
 
   while (1) {
     /* USER CODE END WHILE */
@@ -282,6 +301,97 @@ static void MX_TIM2_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_IC_InitTypeDef sConfigIC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_IC_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim3, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -307,6 +417,46 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+	POT_VALUE = HAL_ADC_GetValue(&hadc1);
+	PWM_STRIDE = ( ( (PWM_MAX - PWM_MIN) * (POT_VALUE - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
+	if (PWM_STRIDE > PWM_MAX) PWM_STRIDE = PWM_MAX;
+	if (PWM_STRIDE < PWM_MIN) PWM_STRIDE = PWM_MIN;
+	ui8TimPulse = PWM_STRIDE;
+}
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
+{
+	if (htim != &htim3) return ;
+
+    if(gu8_State == IDLE)
+    {
+        gu32_T1 = TIM3->CCR1;
+        gu16_TIM3_OVC = 0;
+        gu8_State = DONE;
+    }
+    else if(gu8_State == DONE)
+    {
+        gu32_T2 = TIM3->CCR1;
+        gu32_Ticks = (gu32_T2 + (gu16_TIM3_OVC * 65536)) - gu32_T1;
+        gu32_Freq = (uint32_t)(F_CLK/gu32_Ticks);
+        gu8_State = IDLE;
+        if(gu32_Freq != 0)
+		{
+			sprintf(gu8_MSG, "Frequency = %lu Hz\n\r", gu32_Freq);
+			HAL_UART_Transmit(&huart2, (uint8_t *)gu8_MSG, sizeof(gu8_MSG), 100);
+		}
+    }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+{
+	if (htim != &htim3) return ;
+
+    gu16_TIM3_OVC++;
+}
 
 /* USER CODE END 4 */
 
