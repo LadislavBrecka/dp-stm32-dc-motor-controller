@@ -48,15 +48,14 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
-uint8_t ui8TimPulse = 90;  // set duty cycle to 50% initially
-uint16_t POT_VALUE = 0;
-uint16_t PWM_STRIDE = 0;
+uint8_t 	final_stride = 90;  // set duty cycle to 50% initially
+uint16_t 	pot_value = 0;
+uint16_t 	stride_percentage = 0;
 
-#define IDLE   0
-#define DONE   1
-#define F_CLK  16000000UL
+//#define IDLE   0
+//#define DONE   1
+//#define F_CLK  16000000UL
 
-char 		hal_MSG[100] = {'\0'};
 uint8_t 	hal1_State = IDLE;
 uint32_t 	hal1_T1 = 0;
 uint32_t 	hal1_T2 = 0;
@@ -70,6 +69,8 @@ uint32_t 	hal2_T2 = 0;
 uint32_t 	hal2_Ticks = 0;
 uint16_t 	hal2_TIM4_OVC = 0;
 uint32_t 	hal2_Freq = 0;
+
+char 		hal_MSG[100] = {};
 
 /* USER CODE END PV */
 
@@ -146,7 +147,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   // setting up default pwm stride
-  TIM2->CCR2 = (htim2.Init.Period * ui8TimPulse) / 100u;
+  TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u;
 
   // setting up default motor direction
   HAL_GPIO_WritePin(MOTOR_DIRECTION_1_GPIO_Port, MOTOR_DIRECTION_1_Pin, GPIO_PIN_SET);
@@ -492,11 +493,11 @@ static void MX_GPIO_Init(void)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-	POT_VALUE = HAL_ADC_GetValue(&hadc1);
-	PWM_STRIDE = ( ( (PWM_MAX - PWM_MIN) * (POT_VALUE - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
-	if (PWM_STRIDE > PWM_MAX) PWM_STRIDE = PWM_MAX;
-	if (PWM_STRIDE < PWM_MIN) PWM_STRIDE = PWM_MIN;
-	ui8TimPulse = PWM_STRIDE;
+	pot_value = HAL_ADC_GetValue(&hadc1);
+	stride_percentage = ( ( (PWM_MAX - PWM_MIN) * (pot_value - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
+	if (stride_percentage > PWM_MAX) stride_percentage = PWM_MAX;
+	if (stride_percentage < PWM_MIN) stride_percentage = PWM_MIN;
+	final_stride = stride_percentage;
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)

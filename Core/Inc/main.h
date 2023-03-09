@@ -47,6 +47,10 @@ extern "C" {
 
 #define POT_MIN 0
 #define POT_MAX 4196
+
+#define IDLE   0
+#define DONE   1
+#define F_CLK  16000000UL
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

@@ -39,11 +39,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_line   00010821  00000000  00000000  00056e27  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000dd91b  00000000  00000000  00067648  2**0
+ 18 .debug_str    000dd929  00000000  00000000  00067648  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  00144f63  2**0
+ 19 .comment      00000050  00000000  00000000  00144f71  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00003e44  00000000  00000000  00144fb4  2**2
+ 20 .debug_frame  00003e44  00000000  00000000  00144fc4  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -488,7 +488,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   // setting up default pwm stride
-  TIM2->CCR2 = (htim2.Init.Period * ui8TimPulse) / 100u;
+  TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u;
  8000608:	4b0d      	ldr	r3, [pc, #52]	; (8000640 <main+0x8c>)
  800060a:	68db      	ldr	r3, [r3, #12]
  800060c:	4a10      	ldr	r2, [pc, #64]	; (8000650 <main+0x9c>)
@@ -1392,14 +1392,14 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
  8000b42:	b082      	sub	sp, #8
  8000b44:	af00      	add	r7, sp, #0
  8000b46:	6078      	str	r0, [r7, #4]
-	POT_VALUE = HAL_ADC_GetValue(&hadc1);
+	pot_value = HAL_ADC_GetValue(&hadc1);
  8000b48:	4817      	ldr	r0, [pc, #92]	; (8000ba8 <HAL_ADC_ConvCpltCallback+0x68>)
  8000b4a:	f000 fe27 	bl	800179c <HAL_ADC_GetValue>
  8000b4e:	4603      	mov	r3, r0
  8000b50:	b29a      	uxth	r2, r3
  8000b52:	4b16      	ldr	r3, [pc, #88]	; (8000bac <HAL_ADC_ConvCpltCallback+0x6c>)
  8000b54:	801a      	strh	r2, [r3, #0]
-	PWM_STRIDE = ( ( (PWM_MAX - PWM_MIN) * (POT_VALUE - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
+	stride_percentage = ( ( (PWM_MAX - PWM_MIN) * (pot_value - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
  8000b56:	4b15      	ldr	r3, [pc, #84]	; (8000bac <HAL_ADC_ConvCpltCallback+0x6c>)
  8000b58:	881b      	ldrh	r3, [r3, #0]
  8000b5a:	461a      	mov	r2, r3
@@ -1417,7 +1417,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
  8000b74:	b29a      	uxth	r2, r3
  8000b76:	4b0f      	ldr	r3, [pc, #60]	; (8000bb4 <HAL_ADC_ConvCpltCallback+0x74>)
  8000b78:	801a      	strh	r2, [r3, #0]
-	if (PWM_STRIDE > PWM_MAX) PWM_STRIDE = PWM_MAX;
+	if (stride_percentage > PWM_MAX) stride_percentage = PWM_MAX;
  8000b7a:	4b0e      	ldr	r3, [pc, #56]	; (8000bb4 <HAL_ADC_ConvCpltCallback+0x74>)
  8000b7c:	881b      	ldrh	r3, [r3, #0]
  8000b7e:	2b64      	cmp	r3, #100	; 0x64
@@ -1425,7 +1425,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
  8000b82:	4b0c      	ldr	r3, [pc, #48]	; (8000bb4 <HAL_ADC_ConvCpltCallback+0x74>)
  8000b84:	2264      	movs	r2, #100	; 0x64
  8000b86:	801a      	strh	r2, [r3, #0]
-	if (PWM_STRIDE < PWM_MIN) PWM_STRIDE = PWM_MIN;
+	if (stride_percentage < PWM_MIN) stride_percentage = PWM_MIN;
  8000b88:	4b0a      	ldr	r3, [pc, #40]	; (8000bb4 <HAL_ADC_ConvCpltCallback+0x74>)
  8000b8a:	881b      	ldrh	r3, [r3, #0]
  8000b8c:	2b45      	cmp	r3, #69	; 0x45
@@ -1433,7 +1433,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
  8000b90:	4b08      	ldr	r3, [pc, #32]	; (8000bb4 <HAL_ADC_ConvCpltCallback+0x74>)
  8000b92:	2246      	movs	r2, #70	; 0x46
  8000b94:	801a      	strh	r2, [r3, #0]
-	ui8TimPulse = PWM_STRIDE;
+	final_stride = stride_percentage;
  8000b96:	4b07      	ldr	r3, [pc, #28]	; (8000bb4 <HAL_ADC_ConvCpltCallback+0x74>)
  8000b98:	881b      	ldrh	r3, [r3, #0]
  8000b9a:	b2da      	uxtb	r2, r3
@@ -1468,43 +1468,43 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
  8000bce:	4a3f      	ldr	r2, [pc, #252]	; (8000ccc <HAL_TIM_IC_CaptureCallback+0x110>)
  8000bd0:	4293      	cmp	r3, r2
  8000bd2:	d044      	beq.n	8000c5e <HAL_TIM_IC_CaptureCallback+0xa2>
-				hal2_Freq = (uint32_t)(F_CLK/hal2_Ticks);
-				hal2_State = IDLE;
-			}
-			break;
+			hal2_Freq = (uint32_t)(F_CLK/hal2_Ticks);
+			hal2_State = IDLE;
+		}
+		break;
 	}
 }
  8000bd4:	e074      	b.n	8000cc0 <HAL_TIM_IC_CaptureCallback+0x104>
-			if(hal1_State == IDLE)
+		if(hal1_State == IDLE)
  8000bd6:	4b3e      	ldr	r3, [pc, #248]	; (8000cd0 <HAL_TIM_IC_CaptureCallback+0x114>)
  8000bd8:	781b      	ldrb	r3, [r3, #0]
  8000bda:	2b00      	cmp	r3, #0
  8000bdc:	d10a      	bne.n	8000bf4 <HAL_TIM_IC_CaptureCallback+0x38>
-				hal1_T1 = TIM3->CCR1;
+			hal1_T1 = TIM3->CCR1;
  8000bde:	4b3a      	ldr	r3, [pc, #232]	; (8000cc8 <HAL_TIM_IC_CaptureCallback+0x10c>)
  8000be0:	6b5b      	ldr	r3, [r3, #52]	; 0x34
  8000be2:	4a3c      	ldr	r2, [pc, #240]	; (8000cd4 <HAL_TIM_IC_CaptureCallback+0x118>)
  8000be4:	6013      	str	r3, [r2, #0]
-				hal1_TIM3_OVC = 0;
+			hal1_TIM3_OVC = 0;
  8000be6:	4b3c      	ldr	r3, [pc, #240]	; (8000cd8 <HAL_TIM_IC_CaptureCallback+0x11c>)
  8000be8:	2200      	movs	r2, #0
  8000bea:	801a      	strh	r2, [r3, #0]
-				hal1_State = DONE;
+			hal1_State = DONE;
  8000bec:	4b38      	ldr	r3, [pc, #224]	; (8000cd0 <HAL_TIM_IC_CaptureCallback+0x114>)
  8000bee:	2201      	movs	r2, #1
  8000bf0:	701a      	strb	r2, [r3, #0]
  8000bf2:	e01d      	b.n	8000c30 <HAL_TIM_IC_CaptureCallback+0x74>
-			else if(hal1_State == DONE)
+		else if(hal1_State == DONE)
  8000bf4:	4b36      	ldr	r3, [pc, #216]	; (8000cd0 <HAL_TIM_IC_CaptureCallback+0x114>)
  8000bf6:	781b      	ldrb	r3, [r3, #0]
  8000bf8:	2b01      	cmp	r3, #1
  8000bfa:	d119      	bne.n	8000c30 <HAL_TIM_IC_CaptureCallback+0x74>
-				hal1_T2 = TIM3->CCR1;
+			hal1_T2 = TIM3->CCR1;
  8000bfc:	4b32      	ldr	r3, [pc, #200]	; (8000cc8 <HAL_TIM_IC_CaptureCallback+0x10c>)
  8000bfe:	6b5b      	ldr	r3, [r3, #52]	; 0x34
  8000c00:	4a36      	ldr	r2, [pc, #216]	; (8000cdc <HAL_TIM_IC_CaptureCallback+0x120>)
  8000c02:	6013      	str	r3, [r2, #0]
-				hal1_Ticks = (hal1_T2 + (hal1_TIM3_OVC * 65536)) - hal1_T1;
+			hal1_Ticks = (hal1_T2 + (hal1_TIM3_OVC * 65536)) - hal1_T1;
  8000c04:	4b34      	ldr	r3, [pc, #208]	; (8000cd8 <HAL_TIM_IC_CaptureCallback+0x11c>)
  8000c06:	881b      	ldrh	r3, [r3, #0]
  8000c08:	041b      	lsls	r3, r3, #16
@@ -1517,27 +1517,27 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
  8000c16:	1ad3      	subs	r3, r2, r3
  8000c18:	4a31      	ldr	r2, [pc, #196]	; (8000ce0 <HAL_TIM_IC_CaptureCallback+0x124>)
  8000c1a:	6013      	str	r3, [r2, #0]
-				hal1_Freq = (uint32_t)(F_CLK/hal1_Ticks);
+			hal1_Freq = (uint32_t)(F_CLK/hal1_Ticks);
  8000c1c:	4b30      	ldr	r3, [pc, #192]	; (8000ce0 <HAL_TIM_IC_CaptureCallback+0x124>)
  8000c1e:	681b      	ldr	r3, [r3, #0]
  8000c20:	4a30      	ldr	r2, [pc, #192]	; (8000ce4 <HAL_TIM_IC_CaptureCallback+0x128>)
  8000c22:	fbb2 f3f3 	udiv	r3, r2, r3
  8000c26:	4a30      	ldr	r2, [pc, #192]	; (8000ce8 <HAL_TIM_IC_CaptureCallback+0x12c>)
  8000c28:	6013      	str	r3, [r2, #0]
-				hal1_State = IDLE;
+			hal1_State = IDLE;
  8000c2a:	4b29      	ldr	r3, [pc, #164]	; (8000cd0 <HAL_TIM_IC_CaptureCallback+0x114>)
  8000c2c:	2200      	movs	r2, #0
  8000c2e:	701a      	strb	r2, [r3, #0]
-			if(hal1_Freq != 0 || hal2_Freq != 0)
+		if(hal1_Freq != 0 && hal2_Freq != 0)
  8000c30:	4b2d      	ldr	r3, [pc, #180]	; (8000ce8 <HAL_TIM_IC_CaptureCallback+0x12c>)
  8000c32:	681b      	ldr	r3, [r3, #0]
  8000c34:	2b00      	cmp	r3, #0
- 8000c36:	d103      	bne.n	8000c40 <HAL_TIM_IC_CaptureCallback+0x84>
+ 8000c36:	d040      	beq.n	8000cba <HAL_TIM_IC_CaptureCallback+0xfe>
  8000c38:	4b2c      	ldr	r3, [pc, #176]	; (8000cec <HAL_TIM_IC_CaptureCallback+0x130>)
  8000c3a:	681b      	ldr	r3, [r3, #0]
  8000c3c:	2b00      	cmp	r3, #0
  8000c3e:	d03c      	beq.n	8000cba <HAL_TIM_IC_CaptureCallback+0xfe>
-				sprintf(hal_MSG, "Frequency = %lu Hz ; %lu Hz\n\r", hal1_Freq, hal2_Freq);
+			sprintf(hal_MSG, "Frequency = %lu Hz ; %lu Hz\n\r", hal1_Freq, hal2_Freq);
  8000c40:	4b29      	ldr	r3, [pc, #164]	; (8000ce8 <HAL_TIM_IC_CaptureCallback+0x12c>)
  8000c42:	681a      	ldr	r2, [r3, #0]
  8000c44:	4b29      	ldr	r3, [pc, #164]	; (8000cec <HAL_TIM_IC_CaptureCallback+0x130>)
@@ -1545,45 +1545,45 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
  8000c48:	4929      	ldr	r1, [pc, #164]	; (8000cf0 <HAL_TIM_IC_CaptureCallback+0x134>)
  8000c4a:	482a      	ldr	r0, [pc, #168]	; (8000cf4 <HAL_TIM_IC_CaptureCallback+0x138>)
  8000c4c:	f003 ff90 	bl	8004b70 <siprintf>
-				HAL_UART_Transmit(&huart2, (uint8_t *)hal_MSG, sizeof(hal_MSG), 100);
+			HAL_UART_Transmit(&huart2, (uint8_t *)hal_MSG, sizeof(hal_MSG), 100);
  8000c50:	2364      	movs	r3, #100	; 0x64
  8000c52:	2264      	movs	r2, #100	; 0x64
  8000c54:	4927      	ldr	r1, [pc, #156]	; (8000cf4 <HAL_TIM_IC_CaptureCallback+0x138>)
  8000c56:	4828      	ldr	r0, [pc, #160]	; (8000cf8 <HAL_TIM_IC_CaptureCallback+0x13c>)
  8000c58:	f003 fbe3 	bl	8004422 <HAL_UART_Transmit>
-			break;
+		break;
  8000c5c:	e02d      	b.n	8000cba <HAL_TIM_IC_CaptureCallback+0xfe>
-			if(hal2_State == IDLE)
+		if(hal2_State == IDLE)
  8000c5e:	4b27      	ldr	r3, [pc, #156]	; (8000cfc <HAL_TIM_IC_CaptureCallback+0x140>)
  8000c60:	781b      	ldrb	r3, [r3, #0]
  8000c62:	2b00      	cmp	r3, #0
  8000c64:	d10a      	bne.n	8000c7c <HAL_TIM_IC_CaptureCallback+0xc0>
-				hal2_T1 = TIM4->CCR1;
+			hal2_T1 = TIM4->CCR1;
  8000c66:	4b19      	ldr	r3, [pc, #100]	; (8000ccc <HAL_TIM_IC_CaptureCallback+0x110>)
  8000c68:	6b5b      	ldr	r3, [r3, #52]	; 0x34
  8000c6a:	4a25      	ldr	r2, [pc, #148]	; (8000d00 <HAL_TIM_IC_CaptureCallback+0x144>)
  8000c6c:	6013      	str	r3, [r2, #0]
-				hal2_TIM4_OVC = 0;
+			hal2_TIM4_OVC = 0;
  8000c6e:	4b25      	ldr	r3, [pc, #148]	; (8000d04 <HAL_TIM_IC_CaptureCallback+0x148>)
  8000c70:	2200      	movs	r2, #0
  8000c72:	801a      	strh	r2, [r3, #0]
-				hal2_State = DONE;
+			hal2_State = DONE;
  8000c74:	4b21      	ldr	r3, [pc, #132]	; (8000cfc <HAL_TIM_IC_CaptureCallback+0x140>)
  8000c76:	2201      	movs	r2, #1
  8000c78:	701a      	strb	r2, [r3, #0]
-			break;
+		break;
  8000c7a:	e020      	b.n	8000cbe <HAL_TIM_IC_CaptureCallback+0x102>
-			else if(hal2_State == DONE)
+		else if(hal2_State == DONE)
  8000c7c:	4b1f      	ldr	r3, [pc, #124]	; (8000cfc <HAL_TIM_IC_CaptureCallback+0x140>)
  8000c7e:	781b      	ldrb	r3, [r3, #0]
  8000c80:	2b01      	cmp	r3, #1
  8000c82:	d11c      	bne.n	8000cbe <HAL_TIM_IC_CaptureCallback+0x102>
-				hal2_T2 = TIM4->CCR1;
+			hal2_T2 = TIM4->CCR1;
  8000c84:	4b11      	ldr	r3, [pc, #68]	; (8000ccc <HAL_TIM_IC_CaptureCallback+0x110>)
  8000c86:	6b5b      	ldr	r3, [r3, #52]	; 0x34
  8000c88:	4a1f      	ldr	r2, [pc, #124]	; (8000d08 <HAL_TIM_IC_CaptureCallback+0x14c>)
  8000c8a:	6013      	str	r3, [r2, #0]
-				hal2_Ticks = (hal2_T2 + (hal2_TIM4_OVC * 65536)) - hal2_T1;
+			hal2_Ticks = (hal2_T2 + (hal2_TIM4_OVC * 65536)) - hal2_T1;
  8000c8c:	4b1d      	ldr	r3, [pc, #116]	; (8000d04 <HAL_TIM_IC_CaptureCallback+0x148>)
  8000c8e:	881b      	ldrh	r3, [r3, #0]
  8000c90:	041b      	lsls	r3, r3, #16
@@ -1596,23 +1596,23 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
  8000c9e:	1ad3      	subs	r3, r2, r3
  8000ca0:	4a1a      	ldr	r2, [pc, #104]	; (8000d0c <HAL_TIM_IC_CaptureCallback+0x150>)
  8000ca2:	6013      	str	r3, [r2, #0]
-				hal2_Freq = (uint32_t)(F_CLK/hal2_Ticks);
+			hal2_Freq = (uint32_t)(F_CLK/hal2_Ticks);
  8000ca4:	4b19      	ldr	r3, [pc, #100]	; (8000d0c <HAL_TIM_IC_CaptureCallback+0x150>)
  8000ca6:	681b      	ldr	r3, [r3, #0]
  8000ca8:	4a0e      	ldr	r2, [pc, #56]	; (8000ce4 <HAL_TIM_IC_CaptureCallback+0x128>)
  8000caa:	fbb2 f3f3 	udiv	r3, r2, r3
  8000cae:	4a0f      	ldr	r2, [pc, #60]	; (8000cec <HAL_TIM_IC_CaptureCallback+0x130>)
  8000cb0:	6013      	str	r3, [r2, #0]
-				hal2_State = IDLE;
+			hal2_State = IDLE;
  8000cb2:	4b12      	ldr	r3, [pc, #72]	; (8000cfc <HAL_TIM_IC_CaptureCallback+0x140>)
  8000cb4:	2200      	movs	r2, #0
  8000cb6:	701a      	strb	r2, [r3, #0]
-			break;
+		break;
  8000cb8:	e001      	b.n	8000cbe <HAL_TIM_IC_CaptureCallback+0x102>
-			break;
+		break;
  8000cba:	bf00      	nop
  8000cbc:	e000      	b.n	8000cc0 <HAL_TIM_IC_CaptureCallback+0x104>
-			break;
+		break;
  8000cbe:	bf00      	nop
 }
  8000cc0:	bf00      	nop
@@ -1621,22 +1621,22 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
  8000cc6:	bd80      	pop	{r7, pc}
  8000cc8:	40000400 	.word	0x40000400
  8000ccc:	40000800 	.word	0x40000800
- 8000cd0:	2000025c 	.word	0x2000025c
- 8000cd4:	20000260 	.word	0x20000260
- 8000cd8:	2000026c 	.word	0x2000026c
- 8000cdc:	20000264 	.word	0x20000264
- 8000ce0:	20000268 	.word	0x20000268
+ 8000cd0:	200001f8 	.word	0x200001f8
+ 8000cd4:	200001fc 	.word	0x200001fc
+ 8000cd8:	20000208 	.word	0x20000208
+ 8000cdc:	20000200 	.word	0x20000200
+ 8000ce0:	20000204 	.word	0x20000204
  8000ce4:	00f42400 	.word	0x00f42400
- 8000ce8:	20000270 	.word	0x20000270
- 8000cec:	20000288 	.word	0x20000288
+ 8000ce8:	2000020c 	.word	0x2000020c
+ 8000cec:	20000224 	.word	0x20000224
  8000cf0:	08005464 	.word	0x08005464
- 8000cf4:	200001f8 	.word	0x200001f8
+ 8000cf4:	20000228 	.word	0x20000228
  8000cf8:	200001b0 	.word	0x200001b0
- 8000cfc:	20000274 	.word	0x20000274
- 8000d00:	20000278 	.word	0x20000278
- 8000d04:	20000284 	.word	0x20000284
- 8000d08:	2000027c 	.word	0x2000027c
- 8000d0c:	20000280 	.word	0x20000280
+ 8000cfc:	20000210 	.word	0x20000210
+ 8000d00:	20000214 	.word	0x20000214
+ 8000d04:	20000220 	.word	0x20000220
+ 8000d08:	20000218 	.word	0x20000218
+ 8000d0c:	2000021c 	.word	0x2000021c
 
 08000d10 <HAL_TIM_PeriodElapsedCallback>:
 
@@ -1655,30 +1655,30 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
  8000d22:	4a0d      	ldr	r2, [pc, #52]	; (8000d58 <HAL_TIM_PeriodElapsedCallback+0x48>)
  8000d24:	4293      	cmp	r3, r2
  8000d26:	d007      	beq.n	8000d38 <HAL_TIM_PeriodElapsedCallback+0x28>
-			break;
-		case (uint32_t)TIM4: // TIM4 is measuring HAL 2 frequency
-			hal2_TIM4_OVC++;
-			break;
+		break;
+	case (uint32_t)TIM4: // TIM4 is measuring HAL 2 frequency
+		hal2_TIM4_OVC++;
+		break;
 	}
 }
  8000d28:	e00d      	b.n	8000d46 <HAL_TIM_PeriodElapsedCallback+0x36>
-			hal1_TIM3_OVC++;
+		hal1_TIM3_OVC++;
  8000d2a:	4b0c      	ldr	r3, [pc, #48]	; (8000d5c <HAL_TIM_PeriodElapsedCallback+0x4c>)
  8000d2c:	881b      	ldrh	r3, [r3, #0]
  8000d2e:	3301      	adds	r3, #1
  8000d30:	b29a      	uxth	r2, r3
  8000d32:	4b0a      	ldr	r3, [pc, #40]	; (8000d5c <HAL_TIM_PeriodElapsedCallback+0x4c>)
  8000d34:	801a      	strh	r2, [r3, #0]
-			break;
+		break;
  8000d36:	e006      	b.n	8000d46 <HAL_TIM_PeriodElapsedCallback+0x36>
-			hal2_TIM4_OVC++;
+		hal2_TIM4_OVC++;
  8000d38:	4b09      	ldr	r3, [pc, #36]	; (8000d60 <HAL_TIM_PeriodElapsedCallback+0x50>)
  8000d3a:	881b      	ldrh	r3, [r3, #0]
  8000d3c:	3301      	adds	r3, #1
  8000d3e:	b29a      	uxth	r2, r3
  8000d40:	4b07      	ldr	r3, [pc, #28]	; (8000d60 <HAL_TIM_PeriodElapsedCallback+0x50>)
  8000d42:	801a      	strh	r2, [r3, #0]
-			break;
+		break;
  8000d44:	bf00      	nop
 }
  8000d46:	bf00      	nop
@@ -1689,8 +1689,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
  8000d52:	bf00      	nop
  8000d54:	40000400 	.word	0x40000400
  8000d58:	40000800 	.word	0x40000800
- 8000d5c:	2000026c 	.word	0x2000026c
- 8000d60:	20000284 	.word	0x20000284
+ 8000d5c:	20000208 	.word	0x20000208
+ 8000d60:	20000220 	.word	0x20000220
 
 08000d64 <Error_Handler>:
 /**
@@ -2425,7 +2425,7 @@ void TIM2_IRQHandler(void)
  8001114:	b580      	push	{r7, lr}
  8001116:	af00      	add	r7, sp, #0
   /* USER CODE BEGIN TIM2_IRQn 0 */
-  TIM2->CCR2 = (htim2.Init.Period * ui8TimPulse) / 100u;
+  TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u;
  8001118:	4b08      	ldr	r3, [pc, #32]	; (800113c <TIM2_IRQHandler+0x28>)
  800111a:	68db      	ldr	r3, [r3, #12]
  800111c:	4a08      	ldr	r2, [pc, #32]	; (8001140 <TIM2_IRQHandler+0x2c>)
