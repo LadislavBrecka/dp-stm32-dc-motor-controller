@@ -42,7 +42,7 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 
-#define PWM_MIN 70
+#define PWM_MIN 0
 #define PWM_MAX 100
 
 #define POT_MIN 0
@@ -50,7 +50,7 @@ extern "C" {
 
 #define IDLE   0
 #define DONE   1
-#define F_CLK  16000000UL
+#define F_CLK  100000UL
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
