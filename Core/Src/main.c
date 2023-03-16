@@ -72,7 +72,7 @@ volatile uint16_t 	hal2_TIM4_OVC = 0;
 volatile uint32_t 	hal2_freq = 0;
 volatile uint32_t 	hal2_prev_freq = 0;
 
-volatile uint8_t hal_msg[35] = {'\0'};
+volatile uint8_t hal_msg[10] = {'\0'};
 
 /* USER CODE END PV */
 
@@ -502,8 +502,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 	if (stride_percentage < PWM_MIN) stride_percentage = PWM_MIN;
 	final_stride = stride_percentage;
 
-	sprintf(hal_msg, "Frequency = %lu Hz\n\r", hal2_freq);
-	HAL_UART_Transmit(&huart2, (uint8_t *)hal_msg, sizeof(hal_msg), 35);
+	sprintf(hal_msg, "%lu Hz\n\r", hal2_freq);
+	HAL_UART_Transmit(&huart2, (uint8_t *)hal_msg, sizeof(hal_msg), 10);
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
