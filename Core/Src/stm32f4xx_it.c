@@ -62,6 +62,8 @@ extern TIM_HandleTypeDef htim4;
 /* USER CODE BEGIN EV */
 
 extern uint8_t final_stride;
+extern uint16_t hal1_TIM3_OVC;
+extern uint16_t hal2_TIM4_OVC;
 
 /* USER CODE END EV */
 
@@ -241,7 +243,7 @@ void TIM3_IRQHandler(void)
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
   /* USER CODE BEGIN TIM3_IRQn 1 */
-
+//  hal1_TIM3_OVC++;
   /* USER CODE END TIM3_IRQn 1 */
 }
 
@@ -255,7 +257,7 @@ void TIM4_IRQHandler(void)
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
-
+//  hal2_TIM4_OVC++;
   /* USER CODE END TIM4_IRQn 1 */
 }
 
