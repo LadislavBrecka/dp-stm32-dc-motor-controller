@@ -523,7 +523,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
 		{
 			hal1_T2 = TIM3->CCR1;
 			hal1_ticks = (hal1_T2 + (hal1_TIM3_OVC * 65536)) - hal1_T1;
-			// sometimes, hal2_TIM4_OVC isn't incremented when it should be,
+			// sometimes, hal1_TIM3_OVC isn't incremented when it should be,
 			// so this check is repairing the problem
 			if (hal1_ticks > 10000) hal1_ticks = (hal1_T2 + (1 * 65536)) - hal1_T1;
 			hal1_freq = (uint32_t)(F_CLK/hal1_ticks);
