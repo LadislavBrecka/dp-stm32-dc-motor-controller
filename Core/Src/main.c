@@ -48,29 +48,23 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
-uint8_t 	final_stride = 90;  // set duty cycle to 50% initially
+uint8_t 	final_stride = 50;  // set duty cycle to 50% initially
 uint16_t 	pot_value = 0;
 uint16_t 	stride_percentage = 0;
 
-//#define IDLE   0
-//#define DONE   1
-//#define F_CLK  16000000UL
+uint8_t 	hal1_state = IDLE;
+uint32_t 	hal1_T1 = 0;
+uint32_t 	hal1_T2 = 0;
+uint16_t 	hal1_ticks = 0;
+uint16_t 	hal1_TIM3_OVC = 0;
+uint32_t 	hal1_freq = 0;
 
-volatile uint8_t 	hal1_state = IDLE;
-volatile uint32_t 	hal1_T1 = 0;
-volatile uint32_t 	hal1_T2 = 0;
-volatile uint32_t 	hal1_ticks = 0;
- uint16_t 	hal1_TIM3_OVC = 0;
-volatile uint32_t 	hal1_freq = 0;
-volatile uint32_t 	hal1_prev_freq = 0;
-
-volatile uint8_t 	hal2_state = IDLE;
-volatile uint32_t 	hal2_T1 = 0;
-volatile uint32_t 	hal2_T2 = 0;
-volatile uint32_t 	hal2_ticks = 0;
- uint16_t 	hal2_TIM4_OVC = 0;
-volatile uint32_t 	hal2_freq = 0;
-volatile uint32_t 	hal2_prev_freq = 0;
+uint8_t 	hal2_state = IDLE;
+uint32_t 	hal2_T1 = 0;
+uint32_t 	hal2_T2 = 0;
+uint16_t 	hal2_ticks = 0;
+uint16_t 	hal2_TIM4_OVC = 0;
+uint32_t 	hal2_freq = 0;
 
 char hal_msg[31] = {'\0'};
 
@@ -85,7 +79,10 @@ static void MX_TIM3_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM4_Init(void);
 /* USER CODE BEGIN PFP */
+
 uint32_t get_absolute_value(int32_t value);
+void compute_ticks(uint16_t *hal_ticks, uint32_t T1, uint32_t T2, uint16_t TIM_OVC);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -522,10 +519,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
 		else if(hal1_state == DONE)
 		{
 			hal1_T2 = TIM3->CCR1;
-			hal1_ticks = (hal1_T2 + (hal1_TIM3_OVC * 65536)) - hal1_T1;
-			// sometimes, hal1_TIM3_OVC isn't incremented when it should be,
-			// so this check is repairing the problem
-			if (hal1_ticks > 10000) hal1_ticks = (hal1_T2 + (1 * 65536)) - hal1_T1;
+			compute_ticks(&hal1_ticks, hal1_T1, hal1_T2, hal1_TIM3_OVC);
 			hal1_freq = (uint32_t)(F_CLK/hal1_ticks);
 			hal1_state = IDLE;
 		}
@@ -542,14 +536,22 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
 		else if(hal2_state == DONE)
 		{
 			hal2_T2 = TIM4->CCR1;
-			hal2_ticks = (hal2_T2 + (hal2_TIM4_OVC * 65536)) - hal2_T1;
-			// sometimes, hal2_TIM4_OVC isn't incremented when it should be,
-			// so this check is repairing the problem
-			if (hal2_ticks > 10000) hal2_ticks = (hal2_T2 + (1 * 65536)) - hal2_T1;
+			compute_ticks(&hal2_ticks, hal2_T1, hal2_T2, hal2_TIM4_OVC);
 			hal2_freq = (uint32_t)(F_CLK/hal2_ticks);
 			hal2_state = IDLE;
 		}
 		break;
+	}
+}
+
+void compute_ticks(uint16_t *hal_ticks, uint32_t T1, uint32_t T2, uint16_t TIM_OVC)
+{
+	*hal_ticks = (T2 + (TIM_OVC * 65536)) - T1;
+	// sometimes, TIM_OVC isn't incremented when it should be,
+	// so this check is repairing the problem
+//	uint32_t div = *hal_ticks / 65536;
+	if (*hal_ticks > 10000) {
+		*hal_ticks = (T2 + ((*hal_ticks)  * 65536)) - T1;
 	}
 }
 
