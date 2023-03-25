@@ -63,21 +63,21 @@ uint32_t 	hal1_T1 = 0;
 uint32_t 	hal1_T2 = 0;
 uint16_t 	hal1_ticks = 0;
 uint16_t 	hal1_TIM3_OVC = 0;
-uint32_t 	hal1_freq = 0;
+int32_t 	hal1_freq = 0;
 
 uint8_t 	hal2_state = IDLE;
 uint32_t 	hal2_T1 = 0;
 uint32_t 	hal2_T2 = 0;
 uint16_t 	hal2_ticks = 0;
 uint16_t 	hal2_TIM4_OVC = 0;
-uint32_t 	hal2_freq = 0;
+int32_t 	hal2_freq = 0;
 
 // HAL POSITION MEASUREMENT VARIABLES
-uint32_t 	hal1_abs_pos = 0;
-uint32_t 	hal1_abs_pos_of = 0;
+int32_t 	hal1_abs_pos = 0;
+int32_t 	hal1_abs_pos_of = 0;
 
-uint32_t 	hal2_abs_pos = 0;
-uint32_t 	hal2_abs_pos_of = 0;
+int32_t 	hal2_abs_pos = 0;
+int32_t 	hal2_abs_pos_of = 0;
 
 /* USER CODE END PV */
 
@@ -96,7 +96,7 @@ void set_motor_direction(uint8_t);
 void send_data_usart();
 uint32_t get_absolute_value(int32_t);
 void compute_ticks(uint16_t*, uint32_t, uint32_t, uint16_t);
-void compute_hal_freq(uint32_t*, uint16_t*, uint8_t*, TIM_TypeDef*, uint32_t*, uint32_t*, uint16_t*);
+void compute_hal_freq(int32_t*, uint16_t*, uint8_t*, TIM_TypeDef*, uint32_t*, uint32_t*, uint16_t*);
 
 /* USER CODE END PFP */
 
@@ -581,10 +581,12 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
 	switch((uint32_t)htim->Instance)
 	{
 		case (uint32_t)TIM3: // TIM3 is measuring HAL 1 frequency
+			actual_direction == FORWARD_DIR ? hal1_abs_pos++ : hal1_abs_pos--;
 			compute_hal_freq(&hal1_freq, &hal1_ticks, &hal1_state, TIM3, &hal1_T1, &hal1_T2, &hal1_TIM3_OVC);
 			break;
 
 		case (uint32_t)TIM4:  // TIM4 is measuring HAL 2 frequency
+			actual_direction == FORWARD_DIR ? hal2_abs_pos++ : hal2_abs_pos--;
 			compute_hal_freq(&hal2_freq, &hal2_ticks, &hal2_state, TIM4, &hal2_T1, &hal2_T2, &hal2_TIM4_OVC);
 			break;
 	}
@@ -606,7 +608,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	}
 }
 
-void compute_hal_freq(uint32_t* hal_freq, uint16_t* hal_ticks, uint8_t* hal_state,
+void compute_hal_freq(int32_t* hal_freq, uint16_t* hal_ticks, uint8_t* hal_state,
 		TIM_TypeDef* tim, uint32_t* T1, uint32_t *T2, uint16_t* TIM_OVC)
 {
 	if(*hal_state == IDLE)
@@ -620,6 +622,10 @@ void compute_hal_freq(uint32_t* hal_freq, uint16_t* hal_ticks, uint8_t* hal_stat
 		*T2 = tim->CCR1;
 		compute_ticks(hal_ticks, *T1, *T2, *TIM_OVC);
 		*hal_freq = (uint32_t)(F_CLK/ (*hal_ticks));
+		if (actual_direction == BACKWARD_DIR)
+		{
+			*hal_freq = - (*hal_freq);
+		}
 		*hal_state = IDLE;
 	}
 }
@@ -644,7 +650,7 @@ uint32_t get_absolute_value(int32_t value)
 
 void send_data_usart()
 {
-	USART_Data data = { stride_percentage, hal1_freq, hal2_freq };
+	USART_Data data = { stride_percentage, hal1_freq, hal1_abs_pos };
 	char buffer[sizeof(data)];
 	memcpy(buffer, &data, sizeof(data));
 	HAL_UART_Transmit(&huart2, (uint8_t*)"S", sizeof("S"), 100);

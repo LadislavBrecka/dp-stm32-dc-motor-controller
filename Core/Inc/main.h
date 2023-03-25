@@ -86,8 +86,8 @@ typedef struct USART_Data USART_Data;
 struct USART_Data
 {
 	int32_t speed_set_point;
-	uint32_t hal_1;
-	uint32_t hal_2;
+	int32_t speed;
+	int32_t abs_pos;
 };
 /* USER CODE END Private defines */
 
