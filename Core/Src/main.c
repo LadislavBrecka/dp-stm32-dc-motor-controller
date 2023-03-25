@@ -52,8 +52,12 @@ UART_HandleTypeDef huart2;
 
 uint8_t 	final_stride = 50;  // set duty cycle to 50% initially
 uint16_t 	pot_value = 0;
-uint16_t 	stride_percentage = 0;
+int16_t 	stride_percentage = 0;
 
+// POSITON CONTROL VARIABLES
+uint8_t		actual_direction = FORWARD_DIR;
+
+// HAL SPEED MEASUREMENT VARIABLES
 uint8_t 	hal1_state = IDLE;
 uint32_t 	hal1_T1 = 0;
 uint32_t 	hal1_T2 = 0;
@@ -68,6 +72,13 @@ uint16_t 	hal2_ticks = 0;
 uint16_t 	hal2_TIM4_OVC = 0;
 uint32_t 	hal2_freq = 0;
 
+// HAL POSITION MEASUREMENT VARIABLES
+uint32_t 	hal1_abs_pos = 0;
+uint32_t 	hal1_abs_pos_of = 0;
+
+uint32_t 	hal2_abs_pos = 0;
+uint32_t 	hal2_abs_pos_of = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,10 +92,11 @@ static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
 
+void set_motor_direction(uint8_t);
 void send_data_usart();
-uint32_t get_absolute_value(int32_t value);
-void compute_ticks(uint16_t* hal_ticks, uint32_t T1, uint32_t T2, uint16_t TIM_OVC);
-void compute_hal_freq(uint32_t* hal_freq, uint16_t* hal_ticks, uint8_t* hal_state, TIM_TypeDef* tim, uint32_t* T1, uint32_t *T2, uint16_t* TIM_OVC);
+uint32_t get_absolute_value(int32_t);
+void compute_ticks(uint16_t*, uint32_t, uint32_t, uint16_t);
+void compute_hal_freq(uint32_t*, uint16_t*, uint8_t*, TIM_TypeDef*, uint32_t*, uint32_t*, uint16_t*);
 
 /* USER CODE END PFP */
 
@@ -156,8 +168,7 @@ int main(void)
   TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u;
 
   // setting up default motor direction
-  HAL_GPIO_WritePin(MOTOR_DIRECTION_1_GPIO_Port, MOTOR_DIRECTION_1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(MOTOR_DIRECTION_2_GPIO_Port, MOTOR_DIRECTION_2_Pin, GPIO_PIN_RESET);
+  set_motor_direction(FORWARD_DIR);
 
   while (1) {
     /* USER CODE END WHILE */
@@ -549,7 +560,20 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 	stride_percentage = ( ( (PWM_MAX - PWM_MIN) * (pot_value - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
 	if (stride_percentage > PWM_MAX) stride_percentage = PWM_MAX;
 	if (stride_percentage < PWM_MIN) stride_percentage = PWM_MIN;
-	final_stride = stride_percentage;
+
+	// now stride_percentage is between <-100, 100> because of both direction
+	if (stride_percentage < 0)
+	{
+		// going backward
+		set_motor_direction(BACKWARD_DIR);
+		final_stride = -stride_percentage;
+	}
+	else
+	{
+		// going forward
+		set_motor_direction(FORWARD_DIR);
+		final_stride = stride_percentage;
+	}
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
@@ -620,12 +644,19 @@ uint32_t get_absolute_value(int32_t value)
 
 void send_data_usart()
 {
-	USART_Data data = { final_stride, hal1_freq, hal2_freq };
+	USART_Data data = { stride_percentage, hal1_freq, hal2_freq };
 	char buffer[sizeof(data)];
 	memcpy(buffer, &data, sizeof(data));
 	HAL_UART_Transmit(&huart2, (uint8_t*)"S", sizeof("S"), 100);
 	HAL_UART_Transmit(&huart2, (uint8_t *)buffer, sizeof(data), 100);
 	HAL_UART_Transmit(&huart2, (uint8_t*)"Z", sizeof("Z"), 100);
+}
+
+void set_motor_direction(uint8_t dir)
+{
+	actual_direction = dir;
+	HAL_GPIO_WritePin(MOTOR_DIRECTION_1_GPIO_Port, MOTOR_DIRECTION_1_Pin, dir == FORWARD_DIR ? GPIO_PIN_SET : GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MOTOR_DIRECTION_2_GPIO_Port, MOTOR_DIRECTION_2_Pin, dir == BACKWARD_DIR ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
 /* USER CODE END 4 */

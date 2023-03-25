@@ -42,7 +42,7 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 
-#define PWM_MIN 0
+#define PWM_MIN -100
 #define PWM_MAX 100
 
 #define POT_MIN 0
@@ -50,6 +50,10 @@ extern "C" {
 
 #define IDLE   0
 #define DONE   1
+
+#define FORWARD_DIR   0
+#define BACKWARD_DIR  1
+
 #define F_CLK  100000UL
 /* USER CODE END EC */
 
@@ -81,7 +85,7 @@ void Error_Handler(void);
 typedef struct USART_Data USART_Data;
 struct USART_Data
 {
-	uint32_t speed_set_point;
+	int32_t speed_set_point;
 	uint32_t hal_1;
 	uint32_t hal_2;
 };
