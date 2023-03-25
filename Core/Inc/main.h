@@ -78,7 +78,13 @@ void Error_Handler(void);
 #define MOTOR_DIRECTION_2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+typedef struct USART_Data USART_Data;
+struct USART_Data
+{
+	uint32_t speed_set_point;
+	uint32_t hal_1;
+	uint32_t hal_2;
+};
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

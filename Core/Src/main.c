@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include<stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,6 +44,7 @@ ADC_HandleTypeDef hadc1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
+TIM_HandleTypeDef htim5;
 
 UART_HandleTypeDef huart2;
 
@@ -66,8 +68,6 @@ uint16_t 	hal2_ticks = 0;
 uint16_t 	hal2_TIM4_OVC = 0;
 uint32_t 	hal2_freq = 0;
 
-char hal_msg[31] = {'\0'};
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -78,10 +78,13 @@ static void MX_ADC1_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM4_Init(void);
+static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
 
+void send_data_usart();
 uint32_t get_absolute_value(int32_t value);
-void compute_ticks(uint16_t *hal_ticks, uint32_t T1, uint32_t T2, uint16_t TIM_OVC);
+void compute_ticks(uint16_t* hal_ticks, uint32_t T1, uint32_t T2, uint16_t TIM_OVC);
+void compute_hal_freq(uint32_t* hal_freq, uint16_t* hal_ticks, uint8_t* hal_state, TIM_TypeDef* tim, uint32_t* T1, uint32_t *T2, uint16_t* TIM_OVC);
 
 /* USER CODE END PFP */
 
@@ -123,6 +126,7 @@ int main(void)
   MX_TIM3_Init();
   MX_USART2_UART_Init();
   MX_TIM4_Init();
+  MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
 
   // timer for generating PWM signal
@@ -139,6 +143,9 @@ int main(void)
   // timer for measuring HAL 2 frequency
   HAL_TIM_Base_Start_IT(&htim4);
   HAL_TIM_IC_Start_IT(&htim4, TIM_CHANNEL_1);
+
+  // timer for send data over USART
+  HAL_TIM_Base_Start_IT(&htim5);
 
   /* USER CODE END 2 */
 
@@ -431,6 +438,51 @@ static void MX_TIM4_Init(void)
 }
 
 /**
+  * @brief TIM5 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM5_Init(void)
+{
+
+  /* USER CODE BEGIN TIM5_Init 0 */
+
+  /* USER CODE END TIM5_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM5_Init 1 */
+
+  /* USER CODE END TIM5_Init 1 */
+  htim5.Instance = TIM5;
+  htim5.Init.Prescaler = 160;
+  htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim5.Init.Period = 1000;
+  htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM5_Init 2 */
+
+  /* USER CODE END TIM5_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -498,60 +550,19 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 	if (stride_percentage > PWM_MAX) stride_percentage = PWM_MAX;
 	if (stride_percentage < PWM_MIN) stride_percentage = PWM_MIN;
 	final_stride = stride_percentage;
-
-	sprintf(hal_msg, "SP:%lu-HAL_ONE:%lu-HAL_TWO:%lu\n\r", final_stride, hal1_freq, hal2_freq);
-	HAL_UART_Transmit(&huart2, (uint8_t *)hal_msg, sizeof(hal_msg), 31);
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
 {
-
 	switch((uint32_t)htim->Instance)
 	{
-	case (uint32_t)TIM3: // TIM3 is measuring HAL 1 frequency
-		// code for measuring HAL 1
-		if(hal1_state == IDLE)
-		{
-			hal1_T1 = TIM3->CCR1;
-			hal1_TIM3_OVC = 0;
-			hal1_state = DONE;
-		}
-		else if(hal1_state == DONE)
-		{
-			hal1_T2 = TIM3->CCR1;
-			compute_ticks(&hal1_ticks, hal1_T1, hal1_T2, hal1_TIM3_OVC);
-			hal1_freq = (uint32_t)(F_CLK/hal1_ticks);
-			hal1_state = IDLE;
-		}
-		break;
+		case (uint32_t)TIM3: // TIM3 is measuring HAL 1 frequency
+			compute_hal_freq(&hal1_freq, &hal1_ticks, &hal1_state, TIM3, &hal1_T1, &hal1_T2, &hal1_TIM3_OVC);
+			break;
 
-	case (uint32_t)TIM4:  // TIM4 is measuring HAL 2 frequency
-		// code for measuring HAL 2
-		if(hal2_state == IDLE)
-		{
-			hal2_T1 = TIM4->CCR1;
-			hal2_TIM4_OVC = 0;
-			hal2_state = DONE;
-		}
-		else if(hal2_state == DONE)
-		{
-			hal2_T2 = TIM4->CCR1;
-			compute_ticks(&hal2_ticks, hal2_T1, hal2_T2, hal2_TIM4_OVC);
-			hal2_freq = (uint32_t)(F_CLK/hal2_ticks);
-			hal2_state = IDLE;
-		}
-		break;
-	}
-}
-
-void compute_ticks(uint16_t *hal_ticks, uint32_t T1, uint32_t T2, uint16_t TIM_OVC)
-{
-	*hal_ticks = (T2 + (TIM_OVC * 65536)) - T1;
-	// sometimes, TIM_OVC isn't incremented when it should be,
-	// so this check is repairing the problem
-//	uint32_t div = *hal_ticks / 65536;
-	if (*hal_ticks > 10000) {
-		*hal_ticks = (T2 + ((*hal_ticks)  * 65536)) - T1;
+		case (uint32_t)TIM4:  // TIM4 is measuring HAL 2 frequency
+			compute_hal_freq(&hal2_freq, &hal2_ticks, &hal2_state, TIM4, &hal2_T1, &hal2_T2, &hal2_TIM4_OVC);
+			break;
 	}
 }
 
@@ -565,6 +576,37 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	case (uint32_t)TIM4: // TIM4 is measuring HAL 2 frequency
 		hal2_TIM4_OVC++;
 		break;
+	case (uint32_t)TIM5: // TIM5 is sending USART data
+		send_data_usart();
+		break;
+	}
+}
+
+void compute_hal_freq(uint32_t* hal_freq, uint16_t* hal_ticks, uint8_t* hal_state,
+		TIM_TypeDef* tim, uint32_t* T1, uint32_t *T2, uint16_t* TIM_OVC)
+{
+	if(*hal_state == IDLE)
+	{
+		*T1 = tim->CCR1;
+		*TIM_OVC = 0;
+		*hal_state = DONE;
+	}
+	else if(*hal_state == DONE)
+	{
+		*T2 = tim->CCR1;
+		compute_ticks(hal_ticks, *T1, *T2, *TIM_OVC);
+		*hal_freq = (uint32_t)(F_CLK/ (*hal_ticks));
+		*hal_state = IDLE;
+	}
+}
+
+void compute_ticks(uint16_t* hal_ticks, uint32_t T1, uint32_t T2, uint16_t TIM_OVC)
+{
+	*hal_ticks = (T2 + (TIM_OVC * 65536)) - T1;
+	// sometimes, TIM_OVC isn't incremented when it should be,
+	// so this check is repairing the problem
+	if (*hal_ticks > 10000) {
+		*hal_ticks = (T2 + ((*hal_ticks)  * 65536)) - T1;
 	}
 }
 
@@ -574,6 +616,16 @@ uint32_t get_absolute_value(int32_t value)
 	value ^= temp;                   // toggle the bits if value is negative
 	value += temp & 1;               // add one if value was negative
 	return value;
+}
+
+void send_data_usart()
+{
+	USART_Data data = { final_stride, hal1_freq, hal2_freq };
+	char buffer[sizeof(data)];
+	memcpy(buffer, &data, sizeof(data));
+	HAL_UART_Transmit(&huart2, (uint8_t*)"S", sizeof("S"), 100);
+	HAL_UART_Transmit(&huart2, (uint8_t *)buffer, sizeof(data), 100);
+	HAL_UART_Transmit(&huart2, (uint8_t*)"Z", sizeof("Z"), 100);
 }
 
 /* USER CODE END 4 */
