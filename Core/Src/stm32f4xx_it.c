@@ -62,8 +62,6 @@ extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
 /* USER CODE BEGIN EV */
 
-extern uint8_t final_stride;
-
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -224,7 +222,6 @@ void ADC_IRQHandler(void)
 void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
-  TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u;
 
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);

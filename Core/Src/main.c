@@ -50,7 +50,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
-uint8_t 	final_stride = 50;  // set duty cycle to 50% initially
+// TRIMMER INPUT VARIABLES
+uint8_t 	final_stride = 30;  // set duty cycle to 30% initially
 uint16_t 	pot_value = 0;
 int16_t 	stride_percentage = 0;
 
@@ -92,8 +93,8 @@ static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
 
-void set_motor_direction(uint8_t);
 void send_data_usart();
+void set_motor_direction(uint8_t);
 uint32_t get_absolute_value(int32_t);
 void compute_ticks(uint16_t*, uint32_t, uint32_t, uint16_t);
 void compute_hal_freq(int32_t*, uint16_t*, uint8_t*, TIM_TypeDef*, uint32_t*, uint32_t*, uint16_t*);
@@ -141,34 +142,28 @@ int main(void)
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
 
-  // timer for generating PWM signal
-  HAL_TIM_Base_Start_IT(&htim2);
+  // STARTING ALL PERIPHERALS
+  HAL_TIM_Base_Start_IT(&htim2);	// timer for generating PWM signal
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
-  // adc for scanning trimmer set value
-  HAL_ADC_Start_IT(&hadc1);
+  HAL_ADC_Start_IT(&hadc1);  		// ADC for scanning trimmer set value
 
-  // timer for measuring HAL 1 frequency
-  HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_Base_Start_IT(&htim3);  	// timer for measuring HAL 1 frequency
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
 
-  // timer for measuring HAL 2 frequency
-  HAL_TIM_Base_Start_IT(&htim4);
+  HAL_TIM_Base_Start_IT(&htim4);   	// timer for measuring HAL 2 frequency
   HAL_TIM_IC_Start_IT(&htim4, TIM_CHANNEL_1);
 
-  // timer for send data over USART
-  HAL_TIM_Base_Start_IT(&htim5);
+  HAL_TIM_Base_Start_IT(&htim5); 	// timer for send data over USART
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  // setting up default pwm stride
-  TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u;
-
-  // setting up default motor direction
-  set_motor_direction(FORWARD_DIR);
+  // SETTING INITIAL STATE
+  TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u; // setting up initial PWM stride
+  set_motor_direction(FORWARD_DIR);  // setting up initial motor direction
 
   while (1) {
     /* USER CODE END WHILE */
@@ -589,6 +584,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
 			actual_direction == FORWARD_DIR ? hal2_abs_pos++ : hal2_abs_pos--;
 			compute_hal_freq(&hal2_freq, &hal2_ticks, &hal2_state, TIM4, &hal2_T1, &hal2_T2, &hal2_TIM4_OVC);
 			break;
+
 	}
 }
 
@@ -604,6 +600,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 		break;
 	case (uint32_t)TIM5: // TIM5 is sending USART data
 		send_data_usart();
+		break;
+	case (uint32_t)TIM2:
+		TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u;
 		break;
 	}
 }
