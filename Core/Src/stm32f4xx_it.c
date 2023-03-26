@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +47,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+void send_data_usart();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -61,6 +62,12 @@ extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim5;
 /* USER CODE BEGIN EV */
+extern UART_HandleTypeDef huart2;
+
+extern int32_t 	hal1_freq;
+extern uint32_t hal1_abs_pos;
+extern int16_t  stride_percentage;
+
 
 /* USER CODE END EV */
 
@@ -265,10 +272,20 @@ void TIM5_IRQHandler(void)
   /* USER CODE END TIM5_IRQn 0 */
   HAL_TIM_IRQHandler(&htim5);
   /* USER CODE BEGIN TIM5_IRQn 1 */
-
+  send_data_usart();
   /* USER CODE END TIM5_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
+
+void send_data_usart()
+{
+	USART_Data data = { stride_percentage, hal1_freq, hal1_abs_pos };
+	char buffer[sizeof(data)];
+	memcpy(buffer, &data, sizeof(data));
+	HAL_UART_Transmit(&huart2, (uint8_t*)"S", sizeof("S"), 100);
+	HAL_UART_Transmit(&huart2, (uint8_t *)buffer, sizeof(data), 100);
+	HAL_UART_Transmit(&huart2, (uint8_t*)"Z", sizeof("Z"), 100);
+}
 
 /* USER CODE END 1 */

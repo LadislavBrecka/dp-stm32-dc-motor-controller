@@ -22,7 +22,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include<stdio.h>
-#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,7 +92,6 @@ static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
 
-void send_data_usart();
 void set_motor_direction(uint8_t);
 uint32_t get_absolute_value(int32_t);
 void compute_ticks(uint16_t*, uint32_t, uint32_t, uint16_t);
@@ -598,9 +596,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	case (uint32_t)TIM4: // TIM4 is measuring HAL 2 frequency
 		hal2_TIM4_OVC++;
 		break;
-	case (uint32_t)TIM5: // TIM5 is sending USART data
-		send_data_usart();
-		break;
 	case (uint32_t)TIM2:
 		TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u;
 		break;
@@ -645,16 +640,6 @@ uint32_t get_absolute_value(int32_t value)
 	value ^= temp;                   // toggle the bits if value is negative
 	value += temp & 1;               // add one if value was negative
 	return value;
-}
-
-void send_data_usart()
-{
-	USART_Data data = { stride_percentage, hal1_freq, hal1_abs_pos };
-	char buffer[sizeof(data)];
-	memcpy(buffer, &data, sizeof(data));
-	HAL_UART_Transmit(&huart2, (uint8_t*)"S", sizeof("S"), 100);
-	HAL_UART_Transmit(&huart2, (uint8_t *)buffer, sizeof(data), 100);
-	HAL_UART_Transmit(&huart2, (uint8_t*)"Z", sizeof("Z"), 100);
 }
 
 void set_motor_direction(uint8_t dir)
