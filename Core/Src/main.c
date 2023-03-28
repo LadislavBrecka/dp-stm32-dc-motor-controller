@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include<stdio.h>
+#include<string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,34 +51,59 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 
 // TRIMMER INPUT VARIABLES
-uint8_t 	final_stride = 30;  // set duty cycle to 30% initially
 uint16_t 	pot_value = 0;
-int16_t 	stride_percentage = 0;
+int16_t 	pwm_stride = 0;
 
 // POSITON CONTROL VARIABLES
 uint8_t		actual_direction = FORWARD_DIR;
 
 // HAL SPEED MEASUREMENT VARIABLES
-uint8_t 	hal1_state = IDLE;
-uint32_t 	hal1_T1 = 0;
-uint32_t 	hal1_T2 = 0;
-uint16_t 	hal1_ticks = 0;
-uint16_t 	hal1_TIM3_OVC = 0;
-int32_t 	hal1_freq = 0;
+enum HalState 	hal1_state = IDLE;
+uint32_t 		hal1_T1 = 0;
+uint32_t 		hal1_T2 = 0;
+uint16_t 		hal1_ticks = 0;
+uint16_t 		hal1_TIM3_OVC = 0;
+int32_t 		hal1_freq = 0;
+uint16_t		hal1_level = 0;
 
-uint8_t 	hal2_state = IDLE;
-uint32_t 	hal2_T1 = 0;
-uint32_t 	hal2_T2 = 0;
-uint16_t 	hal2_ticks = 0;
-uint16_t 	hal2_TIM4_OVC = 0;
-int32_t 	hal2_freq = 0;
+enum HalState 	hal2_state = IDLE;
+uint32_t 		hal2_T1 = 0;
+uint32_t 		hal2_T2 = 0;
+uint16_t 		hal2_ticks = 0;
+uint16_t 		hal2_TIM4_OVC = 0;
+int32_t 		hal2_freq = 0;
+uint16_t		hal2_level = 0;
 
 // HAL POSITION MEASUREMENT VARIABLES
 int32_t 	hal1_abs_pos = 0;
 int32_t 	hal1_abs_pos_of = 0;
+int32_t 	hal1_abs_pos_prev = 0;
 
 int32_t 	hal2_abs_pos = 0;
 int32_t 	hal2_abs_pos_of = 0;
+int32_t 	hal2_abs_pos_prev = 0;
+
+// CONTROL SYSTEM VARIABLES
+enum AlgorithmStage stage = MANUAL_MODE;
+
+// IDENTIFICATION VARIABLES
+uint32_t identification_step = 0;
+int16_t		indentification_speed_sp[2048] = {
+		  40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+		  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		  30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+		  95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95,
+		  40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+		 -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30,
+		 -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80, -80,
+		 -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50,
+		 -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70,
+		  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		 //		 -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99,
+//		  30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+//		  70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70,
+
+};
 
 /* USER CODE END PV */
 
@@ -92,10 +118,13 @@ static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
 
-void set_motor_direction(uint8_t);
+void send_data_usart();
+void check_zero_speed();
+void automatic_system_loop();
+void set_motor_direction(int32_t);
 uint32_t get_absolute_value(int32_t);
-void compute_ticks(uint16_t*, uint32_t, uint32_t, uint16_t);
-void compute_hal_freq(int32_t*, uint16_t*, uint8_t*, TIM_TypeDef*, uint32_t*, uint32_t*, uint16_t*);
+void compute_hal_freq(int32_t*, uint16_t*, uint8_t*, uint16_t*, TIM_TypeDef*,
+					  uint32_t*, uint32_t*, uint16_t*, GPIO_TypeDef*, uint16_t);
 
 /* USER CODE END PFP */
 
@@ -160,8 +189,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   // SETTING INITIAL STATE
-  TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u; // setting up initial PWM stride
-  set_motor_direction(FORWARD_DIR);  // setting up initial motor direction
+  TIM2->CCR2 = (htim2.Init.Period * 0) / 100u; // setting up initial PWM stride to 0%
 
   while (1) {
     /* USER CODE END WHILE */
@@ -369,7 +397,7 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
   sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
   sConfigIC.ICFilter = 0;
@@ -427,7 +455,7 @@ static void MX_TIM4_Init(void)
   {
     Error_Handler();
   }
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
   sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
   sConfigIC.ICFilter = 4;
@@ -536,6 +564,12 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, MOTOR_DIRECTION_1_Pin|MOTOR_DIRECTION_2_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin : RESET_EXPERIMENT_BUTTON_Pin */
+  GPIO_InitStruct.Pin = RESET_EXPERIMENT_BUTTON_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(RESET_EXPERIMENT_BUTTON_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pins : MOTOR_DIRECTION_1_Pin MOTOR_DIRECTION_2_Pin */
   GPIO_InitStruct.Pin = MOTOR_DIRECTION_1_Pin|MOTOR_DIRECTION_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -543,95 +577,182 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
 }
 
 /* USER CODE BEGIN 4 */
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+// TIMER GLOBAL INTERRUPT HANDLER FOR ALL TIMERS
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-	pot_value = HAL_ADC_GetValue(&hadc1);
-	stride_percentage = ( ( (PWM_MAX - PWM_MIN) * (pot_value - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
-	if (stride_percentage > PWM_MAX) stride_percentage = PWM_MAX;
-	if (stride_percentage < PWM_MIN) stride_percentage = PWM_MIN;
+	switch((uint32_t)htim->Instance)
+	{
+	// TIM2 is generating PWM frequency
+	case (uint32_t)TIM2:
+		// pwm_stride needs to be in abs value as it can be in interval <-100, 100> (both directions)
+		set_motor_direction(pwm_stride);
+		TIM2->CCR2 = (htim2.Init.Period * get_absolute_value(pwm_stride)) / 100u;
+		break;
+	// TIM3 is measuring HAL 1 frequency
+	case (uint32_t)TIM3:
+		hal1_TIM3_OVC++;
+		break;
+	// TIM4 is measuring HAL 2 frequency
+	case (uint32_t)TIM4:
+		hal2_TIM4_OVC++;
+		break;
+	// TIM5 is used to generate 0,01s interrupt for system simulation
+	case (uint32_t)TIM5:
 
-	// now stride_percentage is between <-100, 100> because of both direction
-	if (stride_percentage < 0)
-	{
-		// going backward
-		set_motor_direction(BACKWARD_DIR);
-		final_stride = -stride_percentage;
-	}
-	else
-	{
-		// going forward
-		set_motor_direction(FORWARD_DIR);
-		final_stride = stride_percentage;
+	    // loop for all automatic tasks as identification, pole-placement and closed loop system
+		automatic_system_loop();
+
+		// handler for USART data transfer to PC
+		send_data_usart();
+
+		// if rpm is zero, than HAL speed will be set to last non-zero number
+		// this function handles it
+		check_zero_speed();
+		break;
 	}
 }
 
+// TIMER CAPTURE INTERRUPT FOR ANALYZING HAL SENSOR SIGNALS
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef* htim)
 {
 	switch((uint32_t)htim->Instance)
 	{
 		case (uint32_t)TIM3: // TIM3 is measuring HAL 1 frequency
-			actual_direction == FORWARD_DIR ? hal1_abs_pos++ : hal1_abs_pos--;
-			compute_hal_freq(&hal1_freq, &hal1_ticks, &hal1_state, TIM3, &hal1_T1, &hal1_T2, &hal1_TIM3_OVC);
+			compute_hal_freq(&hal1_freq, &hal1_ticks, &hal1_state, &hal1_level,
+					TIM3, &hal1_T1, &hal1_T2, &hal1_TIM3_OVC, GPIOA, GPIO_PIN_6);
 			break;
-
 		case (uint32_t)TIM4:  // TIM4 is measuring HAL 2 frequency
-			actual_direction == FORWARD_DIR ? hal2_abs_pos++ : hal2_abs_pos--;
-			compute_hal_freq(&hal2_freq, &hal2_ticks, &hal2_state, TIM4, &hal2_T1, &hal2_T2, &hal2_TIM4_OVC);
+			compute_hal_freq(&hal2_freq, &hal2_ticks, &hal2_state, &hal2_level,
+					TIM4, &hal2_T1, &hal2_T2, &hal2_TIM4_OVC, GPIOB, GPIO_PIN_6);
 			break;
-
 	}
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-	switch((uint32_t)htim->Instance)
+	// scan input trimmer only in MANUAL MODE, otherwise do logic in automatic_system_loop()
+	if (stage == MANUAL_MODE)
 	{
-	case (uint32_t)TIM3: // TIM3 is measuring HAL 1 frequency
-		hal1_TIM3_OVC++;
-		break;
-	case (uint32_t)TIM4: // TIM4 is measuring HAL 2 frequency
-		hal2_TIM4_OVC++;
-		break;
-	case (uint32_t)TIM2:
-		TIM2->CCR2 = (htim2.Init.Period * final_stride) / 100u;
-		break;
+		pot_value = HAL_ADC_GetValue(&hadc1);
+		pwm_stride = ( ( (PWM_MAX - PWM_MIN) * (pot_value - POT_MIN) ) / (POT_MAX - POT_MIN)) + PWM_MIN;
+		if (pwm_stride > PWM_MAX) pwm_stride = PWM_MAX;
+		if (pwm_stride < PWM_MIN) pwm_stride = PWM_MIN;
 	}
 }
 
-void compute_hal_freq(int32_t* hal_freq, uint16_t* hal_ticks, uint8_t* hal_state,
-		TIM_TypeDef* tim, uint32_t* T1, uint32_t *T2, uint16_t* TIM_OVC)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	if(*hal_state == IDLE)
+  if(GPIO_Pin == RESET_EXPERIMENT_BUTTON_Pin) {
+	  stage = NON_IDENTIFIED;
+	  identification_step = 0;
+  } else {
+      __NOP();
+  }
+}
+
+void automatic_system_loop()
+{
+	// IDENTIFICATION EXPERIMENT
+	if (stage == NON_IDENTIFIED)
+	{
+		pwm_stride = indentification_speed_sp[identification_step];
+		identification_step++;
+		if (identification_step > (sizeof(indentification_speed_sp) / sizeof(* indentification_speed_sp)))
+		{
+			stage = MANUAL_MODE;
+		}
+	}
+	// PPM REGULATOR SETTING
+	else if (stage == IDENTIFIED)
+	{
+
+	}
+	// REGULATION SHOWCASE
+	else if (stage == READY_FOR_REGULATION)
+	{
+
+	}
+}
+
+void compute_hal_freq(int32_t* hal_freq, uint16_t* hal_ticks, uint8_t* hal_state, uint16_t* hal_level,
+		TIM_TypeDef* tim, uint32_t* T1, uint32_t *T2, uint16_t* TIM_OVC, GPIO_TypeDef* port, uint16_t pin)
+{
+	// initial rising edge detection
+	if (*hal_state == IDLE && HAL_GPIO_ReadPin(port, pin))
 	{
 		*T1 = tim->CCR1;
 		*TIM_OVC = 0;
-		*hal_state = DONE;
+		*hal_state = RUNNING;
 	}
-	else if(*hal_state == DONE)
+	// all others rising edge detections
+	else if (*hal_state == RUNNING && HAL_GPIO_ReadPin(port, pin))
 	{
+		*hal_level = 1;
 		*T2 = tim->CCR1;
-		compute_ticks(hal_ticks, *T1, *T2, *TIM_OVC);
+		*hal_ticks = (*T2 + (*TIM_OVC * 65536)) - *T1;
 		*hal_freq = (uint32_t)(F_CLK/ (*hal_ticks));
+		*T1 = tim->CCR1;
+		*TIM_OVC = 0;
+
+		// check for phase offset - only for HAL 1 sensor as there is a lot of noise
+		if (hal_level == &hal1_level)
+		{
+			// set direction based on phase offset
+			if (hal1_level != hal2_level) 	actual_direction = FORWARD_DIR;
+			else							actual_direction = BACKWARD_DIR;
+		}
+
+		// based on direction, increment or decrement absolute position
+		actual_direction == FORWARD_DIR ? hal1_abs_pos++ : hal1_abs_pos--;
+		actual_direction == FORWARD_DIR ? hal2_abs_pos++ : hal2_abs_pos--;
+		// scale HAL frequency to <-100, 100>
 		if (actual_direction == BACKWARD_DIR)
 		{
 			*hal_freq = - (*hal_freq);
 		}
-		*hal_state = IDLE;
+	}
+	// all others falling edge detections
+	else if (*hal_state == RUNNING && !HAL_GPIO_ReadPin(port, pin))
+	{
+		*hal_level = 0;
 	}
 }
 
-void compute_ticks(uint16_t* hal_ticks, uint32_t T1, uint32_t T2, uint16_t TIM_OVC)
+void set_motor_direction(int32_t stride)
 {
-	*hal_ticks = (T2 + (TIM_OVC * 65536)) - T1;
-	// sometimes, TIM_OVC isn't incremented when it should be,
-	// so this check is repairing the problem
-	if (*hal_ticks > 10000) {
-		*hal_ticks = (T2 + ((*hal_ticks)  * 65536)) - T1;
+	HAL_GPIO_WritePin(MOTOR_DIRECTION_1_GPIO_Port, MOTOR_DIRECTION_1_Pin, stride >= 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MOTOR_DIRECTION_2_GPIO_Port, MOTOR_DIRECTION_2_Pin, stride < 0  ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+
+void check_zero_speed()
+{
+	// if there is derivative of 0 for absolute position by HAL 1 sensor,
+	// force both HAL signals frequency to 0 - it cannot be set by computation
+	if (hal1_abs_pos_prev == hal1_abs_pos)
+	{
+		hal1_freq = 0; hal2_freq = 0;
 	}
+
+	hal1_abs_pos_prev = hal1_abs_pos;
+	hal2_abs_pos_prev = hal2_abs_pos;
+}
+
+void send_data_usart()
+{
+	USART_Data data = { pwm_stride, hal1_freq, hal1_abs_pos };
+	char buffer[sizeof(data)];
+	memcpy(buffer, &data, sizeof(data));
+	HAL_UART_Transmit(&huart2, (uint8_t*)"S", sizeof("S"), 100);
+	HAL_UART_Transmit(&huart2, (uint8_t *)buffer, sizeof(data), 100);
+	HAL_UART_Transmit(&huart2, (uint8_t*)"Z", sizeof("Z"), 100);
 }
 
 uint32_t get_absolute_value(int32_t value)
@@ -640,13 +761,6 @@ uint32_t get_absolute_value(int32_t value)
 	value ^= temp;                   // toggle the bits if value is negative
 	value += temp & 1;               // add one if value was negative
 	return value;
-}
-
-void set_motor_direction(uint8_t dir)
-{
-	actual_direction = dir;
-	HAL_GPIO_WritePin(MOTOR_DIRECTION_1_GPIO_Port, MOTOR_DIRECTION_1_Pin, dir == FORWARD_DIR ? GPIO_PIN_SET : GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(MOTOR_DIRECTION_2_GPIO_Port, MOTOR_DIRECTION_2_Pin, dir == BACKWARD_DIR ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
 /* USER CODE END 4 */

@@ -48,13 +48,22 @@ extern "C" {
 #define POT_MIN 0
 #define POT_MAX 4196
 
-#define IDLE   0
-#define DONE   1
-
 #define FORWARD_DIR   0
 #define BACKWARD_DIR  1
 
 #define F_CLK  100000UL
+
+enum AlgorithmStage {
+	NON_IDENTIFIED = 0,
+	IDENTIFIED = 1,
+	READY_FOR_REGULATION = 2,
+	MANUAL_MODE = 3
+};
+
+enum HalState {
+	IDLE = 0,
+	RUNNING = 1,
+};
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -74,6 +83,9 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define ADC_1_PWM_TRIMER_Pin GPIO_PIN_7
 #define ADC_1_PWM_TRIMER_GPIO_Port GPIOA
+#define RESET_EXPERIMENT_BUTTON_Pin GPIO_PIN_8
+#define RESET_EXPERIMENT_BUTTON_GPIO_Port GPIOA
+#define RESET_EXPERIMENT_BUTTON_EXTI_IRQn EXTI9_5_IRQn
 #define TIMER_2_MOTOR_PWM_Pin GPIO_PIN_3
 #define TIMER_2_MOTOR_PWM_GPIO_Port GPIOB
 #define MOTOR_DIRECTION_1_Pin GPIO_PIN_4
