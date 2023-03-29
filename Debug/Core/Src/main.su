@@ -1,20 +1,95 @@
-../Core/Src/main.c:140:5:main	8	static
-../Core/Src/main.c:208:6:SystemClock_Config	88	static
-../Core/Src/main.c:250:13:MX_ADC1_Init	24	static
-../Core/Src/main.c:302:13:MX_TIM2_Init	64	static
-../Core/Src/main.c:361:13:MX_TIM3_Init	48	static
-../Core/Src/main.c:419:13:MX_TIM4_Init	48	static
-../Core/Src/main.c:477:13:MX_TIM5_Init	32	static
-../Core/Src/main.c:522:13:MX_USART2_UART_Init	8	static
-../Core/Src/main.c:555:13:MX_GPIO_Init	40	static
-../Core/Src/main.c:589:6:HAL_TIM_PeriodElapsedCallback	24	static
-../Core/Src/main.c:624:6:HAL_TIM_IC_CaptureCallback	40	static
-../Core/Src/main.c:639:6:HAL_ADC_ConvCpltCallback	16	static
-../Core/Src/main.c:651:6:HAL_GPIO_EXTI_Callback	16	static,ignoring_inline_asm
-../Core/Src/main.c:661:6:automatic_system_loop	4	static
-../Core/Src/main.c:685:6:compute_hal_freq	24	static
-../Core/Src/main.c:729:6:set_motor_direction	16	static
-../Core/Src/main.c:735:6:check_zero_speed	4	static
-../Core/Src/main.c:748:6:send_data_usart	32	static
-../Core/Src/main.c:758:10:get_absolute_value	24	static
-../Core/Src/main.c:772:6:Error_Handler	4	static,ignoring_inline_asm
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/arm-none-eabi/thumb/v7e-m+fp/hard/bits/gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/char_traits.h:365:7:static constexpr std::size_t std::char_traits<char>::length(const char_type*)	24	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:67:13:void Eigen::internal::throw_std_bad_alloc()	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:100:32:void* Eigen::internal::handmade_aligned_malloc(std::size_t, std::size_t)	24	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:114:31:void Eigen::internal::handmade_aligned_free(void*)	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:167:31:void Eigen::internal::check_that_malloc_is_allowed()	4	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:174:32:void* Eigen::internal::aligned_malloc(std::size_t)	24	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:198:31:void Eigen::internal::aligned_free(void*)	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/IndexedViewHelper.h:137:16:Eigen::internal::all_t::all_t()	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/IO.h:54:3:Eigen::IOFormat::IOFormat(int, int, const string&, const string&, const string&, const string&, const string&, const string&, char)	40	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/PlainObjectBase.h:98:7:Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1> >::~PlainObjectBase()	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/Matrix.h:178:7:Eigen::Matrix<double, -1, 1>::~Matrix()	16	static
+../Core/Src/../ControllingLib/inc/identification.h:44:32:Eigen::VectorXd DT::IdentificationMethod::get_thetas()	16	static
+../Core/Src/../ControllingLib/inc/identification.h:67:32:Eigen::VectorXd DT::Identificator::get_thetas()	16	static
+../Core/Src/main.cpp:147:5:int main()	8	static
+../Core/Src/main.cpp:215:6:void SystemClock_Config()	88	static
+../Core/Src/main.cpp:257:13:void MX_ADC1_Init()	24	static
+../Core/Src/main.cpp:309:13:void MX_TIM2_Init()	64	static
+../Core/Src/main.cpp:368:13:void MX_TIM3_Init()	48	static
+../Core/Src/main.cpp:426:13:void MX_TIM4_Init()	48	static
+../Core/Src/main.cpp:484:13:void MX_TIM5_Init()	32	static
+../Core/Src/main.cpp:529:13:void MX_USART2_UART_Init()	8	static
+../Core/Src/main.cpp:562:13:void MX_GPIO_Init()	40	static
+../Core/Src/main.cpp:596:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	24	static
+../Core/Src/main.cpp:636:6:void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef*)	40	static
+../Core/Src/main.cpp:653:6:void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:665:6:void HAL_GPIO_EXTI_Callback(uint16_t)	24	static,ignoring_inline_asm
+../Core/Src/main.cpp:676:6:void automatic_system_loop()	32	static
+../Core/Src/main.cpp:711:6:void compute_hal_freq(int32_t*, uint16_t*, HalState*, uint16_t*, TIM_TypeDef*, uint32_t*, uint32_t*, uint16_t*, GPIO_TypeDef*, uint16_t)	24	static
+../Core/Src/main.cpp:759:6:void set_motor_direction(int32_t)	16	static
+../Core/Src/main.cpp:765:6:void check_zero_speed()	4	static
+../Core/Src/main.cpp:778:6:void send_data_usart()	32	static
+../Core/Src/main.cpp:788:10:uint32_t get_absolute_value(int32_t)	24	static
+../Core/Src/main.cpp:802:6:void Error_Handler()	4	static,ignoring_inline_asm
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/char_traits.h:106:7:static constexpr bool __gnu_cxx::char_traits<_CharT>::eq(const char_type&, const char_type&) [with _CharT = char]	16	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/char_traits.h:167:5:static constexpr std::size_t __gnu_cxx::char_traits<_CharT>::length(const char_type*) [with _CharT = char]	24	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/basic_string.h:533:7:std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT*, const _Alloc&) [with <template-parameter-2-1> = std::allocator<char>; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	40	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Macros.h:1073:69:void Eigen::internal::ignore_unused_variable(const T&) [with T = void*]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/SymbolicIndex.h:219:3:Eigen::symbolic::SymbolExpr<tag>::SymbolExpr() [with tag = Eigen::internal::symbolic_last_tag]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/IntegralConstant.h:56:3:Eigen::internal::FixedInt<N>::FixedInt() [with int N = 1]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/IntegralConstant.h:82:12:Eigen::internal::FixedInt<N> Eigen::internal::FixedInt<N>::operator()() const [with int N = 1]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/SymbolicIndex.h:117:55:Eigen::symbolic::AddExpr<Derived, Eigen::symbolic::ValueExpr<Eigen::internal::FixedInt<M> > > Eigen::symbolic::BaseExpr<Derived>::operator+(Eigen::internal::FixedInt<M>) const [with int N = 1; Derived = Eigen::symbolic::SymbolExpr<Eigen::internal::symbolic_last_tag>]	32	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Macros.h:1073:69:void Eigen::internal::ignore_unused_variable(const T&) [with T = int]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/Matrix.h:414:25:Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>::Matrix(const Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>&) [with _Scalar = double; int _Rows = -1; int _Cols = 1; int _Options = 0; int _MaxRows = -1; int _MaxCols = 1]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/DenseStorage.h:621:23:Eigen::DenseStorage<T, -1, -1, _Cols, _Options>::~DenseStorage() [with T = double; int _Cols = 1; int _Options = 0]	16	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:413:7:std::unique_ptr<_Tp, _Dp>::pointer std::unique_ptr<_Tp, _Dp>::operator->() const [with _Tp = DT::IdentificationMethod; _Dp = std::default_delete<DT::IdentificationMethod>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/DenseCoeffsBase.h:406:5:Eigen::DenseCoeffsBase<Derived, 1>::Scalar& Eigen::DenseCoeffsBase<Derived, 1>::operator[](Eigen::Index) [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/stl_iterator_base_funcs.h:138:5:constexpr typename std::iterator_traits< <template-parameter-1-1> >::difference_type std::distance(_InputIterator, _InputIterator) [with _InputIterator = const char*]	24	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/basic_string.tcc:206:7:void std::__cxx11::basic_string<_CharT, _Traits, _Alloc>::_M_construct(_InIterator, _InIterator, std::forward_iterator_tag) [with _FwdIterator = const char*; _CharT = char; _Traits = std::char_traits<char>; _Alloc = std::allocator<char>]	32	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/SymbolicIndex.h:80:18:const Derived& Eigen::symbolic::BaseExpr<Derived>::derived() const [with Derived = Eigen::symbolic::SymbolExpr<Eigen::internal::symbolic_last_tag>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/SymbolicIndex.h:66:3:Eigen::symbolic::ValueExpr<Eigen::internal::FixedInt<N> >::ValueExpr() [with int N = 1]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/SymbolicIndex.h:254:3:Eigen::symbolic::AddExpr<Arg1, Arg2>::AddExpr(const Arg0&, const Arg1&) [with Arg0 = Eigen::symbolic::SymbolExpr<Eigen::internal::symbolic_last_tag>; Arg1 = Eigen::symbolic::ValueExpr<Eigen::internal::FixedInt<1> >]	24	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/MatrixBase.h:485:5:Eigen::MatrixBase<Derived>::MatrixBase() [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/PlainObjectBase.h:511:25:Eigen::PlainObjectBase<Derived>::PlainObjectBase(const Eigen::PlainObjectBase<Derived>&) [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:442:64:void Eigen::internal::conditional_aligned_delete_auto(T*, std::size_t) [with T = double; bool Align = true]	16	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:421:7:std::unique_ptr<_Tp, _Dp>::pointer std::unique_ptr<_Tp, _Dp>::get() const [with _Tp = DT::IdentificationMethod; _Dp = std::default_delete<DT::IdentificationMethod>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/EigenBase.h:60:16:constexpr Eigen::EigenBase<Derived>::Index Eigen::EigenBase<Derived>::rows() const [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/EigenBase.h:67:16:constexpr Eigen::EigenBase<Derived>::Index Eigen::EigenBase<Derived>::size() const [with Derived = Eigen::Matrix<double, -1, 1>]	24	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/CoreEvaluators.h:163:8:Eigen::internal::evaluator<Eigen::PlainObjectBase<Eigen::Matrix<double, -1, 1> > >::~evaluator()	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/CoreEvaluators.h:273:8:Eigen::internal::evaluator<Eigen::Matrix<double, -1, 1> >::~evaluator()	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/DenseCoeffsBase.h:389:5:Eigen::DenseCoeffsBase<Derived, 1>::Scalar& Eigen::DenseCoeffsBase<Derived, 1>::coeffRef(Eigen::Index) [with Derived = Eigen::Matrix<double, -1, 1>]	32	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/ext/type_traits.h:152:5:bool __gnu_cxx::__is_null_pointer(_Type*) [with _Type = const char]	16	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/stl_iterator_base_types.h:238:5:constexpr typename std::iterator_traits< <template-parameter-1-1> >::iterator_category std::__iterator_category(const _Iter&) [with _Iter = const char*]	16	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/stl_iterator_base_funcs.h:98:5:constexpr typename std::iterator_traits< <template-parameter-1-1> >::difference_type std::__distance(_RandomAccessIterator, _RandomAccessIterator, std::random_access_iterator_tag) [with _RandomAccessIterator = const char*]	24	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/DenseBase.h:681:23:Eigen::DenseBase<Derived>::DenseBase() [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/DenseStorage.h:588:23:Eigen::DenseStorage<T, -1, -1, _Cols, _Options>::DenseStorage(const Eigen::DenseStorage<T, -1, -1, _Cols, _Options>&) [with T = double; int _Cols = 1; int _Options = 0]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:257:52:void Eigen::internal::conditional_aligned_free(void*) [with bool Align = true]	16	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:173:18:std::__uniq_ptr_impl<_Tp, _Dp>::pointer std::__uniq_ptr_impl<_Tp, _Dp>::_M_ptr() const [with _Tp = DT::IdentificationMethod; _Dp = std::default_delete<DT::IdentificationMethod>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/EigenBase.h:63:16:constexpr Eigen::EigenBase<Derived>::Index Eigen::EigenBase<Derived>::cols() const [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/EigenBase.h:49:18:const Derived& Eigen::EigenBase<Derived>::derived() const [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/PlainObjectBase.h:143:11:constexpr Eigen::Index Eigen::PlainObjectBase<Derived>::rows() const [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/EigenBase.h:46:12:Derived& Eigen::EigenBase<Derived>::derived() [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/CoreEvaluators.h:282:12:Eigen::internal::evaluator<Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols> >::evaluator(const XprType&) [with Scalar = double; int Rows = -1; int Cols = 1; int Options = 0; int MaxRows = -1; int MaxCols = 1]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/CoreEvaluators.h:122:41:Eigen::internal::evaluator_base<ExpressionType>::~evaluator_base() [with ExpressionType = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/CoreEvaluators.h:226:11:Eigen::internal::evaluator<Eigen::PlainObjectBase<Derived> >::Scalar& Eigen::internal::evaluator<Eigen::PlainObjectBase<Derived> >::coeffRef(Eigen::Index) [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:399:62:T* Eigen::internal::conditional_aligned_new_auto(std::size_t) [with T = double; bool Align = true]	24	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:515:45:void Eigen::internal::smart_copy(const T*, const T*, T*) [with T = double]	24	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/tuple:1304:5:>&) [with unsigned int __i = 0; _Elements = {DT::IdentificationMethod*, std::default_delete<DT::IdentificationMethod>}]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/PlainObjectBase.h:145:11:constexpr Eigen::Index Eigen::PlainObjectBase<Derived>::cols() const [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/DenseStorage.h:626:29:Eigen::Index Eigen::DenseStorage<T, -1, -1, _Cols, _Options>::rows() const [with T = double; int _Cols = 1; int _Options = 0]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/CoreEvaluators.h:195:12:Eigen::internal::evaluator<Eigen::PlainObjectBase<Derived> >::evaluator(const PlainObjectType&) [with Derived = Eigen::Matrix<double, -1, 1>]	24	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:239:53:void* Eigen::internal::conditional_aligned_malloc(std::size_t) [with bool Align = true]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/util/Memory.h:521:40:static void Eigen::internal::smart_copy_helper<T, true>::run(const T*, const T*, T*) [with T = double]	32	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/tuple:1292:5:>&) [with unsigned int __i = 0; _Head = DT::IdentificationMethod*; _Tail = {std::default_delete<DT::IdentificationMethod>}]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/DenseStorage.h:627:52:static constexpr Eigen::Index Eigen::DenseStorage<T, -1, -1, _Cols, _Options>::cols() [with T = double; int _Cols = 1; int _Options = 0]	4	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/PlainObjectBase.h:247:57:const Scalar* Eigen::PlainObjectBase<Derived>::data() const [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/CoreEvaluators.h:121:41:Eigen::internal::evaluator_base<ExpressionType>::evaluator_base() [with ExpressionType = Eigen::Matrix<double, -1, 1>]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/CoreEvaluators.h:139:3:Eigen::internal::plainobjectbase_evaluator_data<Scalar, OuterStride>::plainobjectbase_evaluator_data(const Scalar*, Eigen::Index) [with Scalar = double; int OuterStride = 0]	24	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/tuple:204:7:>&) [with unsigned int _Idx = 0; _Head = DT::IdentificationMethod*; _Tail = {std::default_delete<DT::IdentificationMethod>}]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/DenseStorage.h:646:32:const T* Eigen::DenseStorage<T, -1, -1, _Cols, _Options>::data() const [with T = double; int _Cols = 1; int _Options = 0]	16	static
+/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/tuple:169:7:static constexpr const _Head& std::_Head_base<_Idx, _Head, false>::_M_head(const std::_Head_base<_Idx, _Head, false>&) [with unsigned int _Idx = 0; _Head = DT::IdentificationMethod*]	16	static
+../Core/Src/../ControllingLib/inc/./Eigen/src/Core/IO.h:51:8:Eigen::IOFormat::~IOFormat()	16	static
+../Core/Src/main.cpp:811:1:void __static_initialization_and_destruction_0(int, int)	216	static
+../Core/Src/main.cpp:811:1:cpp)	8	static
+../Core/Src/main.cpp:811:1:cpp)	8	static
