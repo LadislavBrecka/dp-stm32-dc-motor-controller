@@ -64,6 +64,12 @@ enum HalState {
 	IDLE = 0,
 	RUNNING = 1,
 };
+
+struct SimData
+{
+	int16_t u_speed;
+	int32_t y_speed;
+};
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

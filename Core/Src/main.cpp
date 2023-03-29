@@ -27,6 +27,9 @@
 //#include "ident_handler.h"
 
 #include "../ControllingLib/inc/identification.h"
+#include "../ControllingLib/inc/pole_placement.h"
+#include "../ControllingLib/inc/transfer_fcn.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -110,6 +113,7 @@ int16_t		indentification_speed_sp[2048] = {
 
 DT::Identificator* identificator = nullptr;
 double thetas[2] = { 0, 0 };
+double reg_coefs[3] = { 0, 0, 0 };
 
 
 /* USER CODE END PV */
@@ -125,9 +129,9 @@ static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
 /* USER CODE BEGIN PFP */
 
-void send_data_usart();
+void send_data_usart(int16_t, int32_t);
 void check_zero_speed();
-void automatic_system_loop();
+SimData automatic_system_loop();
 void set_motor_direction(int32_t);
 uint32_t get_absolute_value(int32_t);
 void compute_hal_freq(int32_t*, uint16_t*, HalState*, uint16_t*, TIM_TypeDef*,
@@ -620,11 +624,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 	// TIM5 is used for system loop - frequency is in hard real time - 0,01s
 	else if (htim->Instance == TIM5)
 	{
-		// loop for all automatic tasks as identification, pole-placement and closed loop system
-		automatic_system_loop();
-
 		// handler for USART data transfer to PC
-		send_data_usart();
+		if (stage == MANUAL_MODE)
+		{
+			send_data_usart(pwm_stride, hal1_freq);
+		}
+		else
+		{
+			SimData data = automatic_system_loop();
+			send_data_usart(data.u_speed, data.y_speed);
+		}
 
 		// if rpm is zero, than HAL speed will be set to last non-zero number
 		// this function handles it
@@ -673,39 +682,50 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   }
 }
 
-void automatic_system_loop()
+SimData automatic_system_loop()
 {
+	int16_t u_speed = 0;
+	int32_t y_speed = hal1_freq;
+
 	// IDENTIFICATION EXPERIMENT
 	if (stage == NON_IDENTIFIED)
 	{
-
 		if (identification_step < (sizeof(indentification_speed_sp) / sizeof(* indentification_speed_sp)))
 		{
-			pwm_stride = indentification_speed_sp[identification_step++];
+			u_speed = indentification_speed_sp[identification_step++];
+			pwm_stride = u_speed;
 			// identification
-			identificator->update_coeficients((double) pwm_stride, (double) hal1_freq);
+			identificator->update_coeficients((double) u_speed, (double) y_speed);
 		}
 		else
 		{
-			stage = MANUAL_MODE;
 			Eigen::VectorXd vx = identificator->get_thetas();
 			thetas[0] = vx[0]; thetas[1] = vx[1];
 			delete identificator;
 			identificator = nullptr;
+			stage = IDENTIFIED;
+			u_speed = pwm_stride;
 		}
-
-
 	}
+
 	// PPM REGULATOR SETTING
 	else if (stage == IDENTIFIED)
 	{
-
+        Eigen::VectorXd A{{1, thetas[0]}};
+        Eigen::VectorXd B{{thetas[1]}};
+        DT::TransferFunction model(B, A);
+		DT::PIVRegCoefs coefs = DT::PolePlacement::PIV_0z_1p(model, DT::TPZ, 2.0, 0.7, 1.0);
+		reg_coefs[0] = coefs.P; reg_coefs[1] = coefs.I; reg_coefs[2] = coefs.V;
+		stage = MANUAL_MODE;
 	}
+
 	// REGULATION SHOWCASE
 	else if (stage == READY_FOR_REGULATION)
 	{
 
 	}
+
+	return { u_speed, y_speed };
 }
 
 void compute_hal_freq(int32_t* hal_freq, uint16_t* hal_ticks, HalState* hal_state, uint16_t* hal_level,
@@ -775,9 +795,9 @@ void check_zero_speed()
 	hal2_abs_pos_prev = hal2_abs_pos;
 }
 
-void send_data_usart()
+void send_data_usart(int16_t u_speed, int32_t y_speed)
 {
-	USART_Data data = { pwm_stride, hal1_freq, hal1_abs_pos };
+	USART_Data data = { u_speed, y_speed, hal1_abs_pos };
 	char buffer[sizeof(data)];
 	memcpy(buffer, &data, sizeof(data));
 	HAL_UART_Transmit(&huart2, (uint8_t*)"S", sizeof("S"), 100);
