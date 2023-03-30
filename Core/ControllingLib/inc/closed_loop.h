@@ -26,6 +26,7 @@ namespace DT
 // blocks for regulators
 namespace DT
 {
+    // ------------------------------------------------
     class Integrator : public TransferFunction
     {
     public:
@@ -33,12 +34,16 @@ namespace DT
         ~Integrator();
     };
 
+    // ------------------------------------------------
+
     class Derivator : public TransferFunction
     {
     public:
         Derivator(AproximationType aprox_type, double T=0.0, double N=0.0);
         ~Derivator();
     };
+
+    // ------------------------------------------------
 
     class PIDRegulator 
     {
@@ -54,6 +59,23 @@ namespace DT
         ~PIDRegulator();
 
         double step(double e);       
+    };
+
+    // ------------------------------------------------
+
+    class PIVRegulator
+    {
+    private:
+        double P_gain, I_gain, V_gain;
+        double u_min, u_max, k_aw, prev_aw_gain = 0.0;
+        std::unique_ptr<Integrator> i_reg_integrator;
+
+    public:
+        PIVRegulator(AproximationType aprox_type, double P, double I, double V, double T=0.0,
+                     double uMin=-10.0, double uMax=10.0, double Kaw=0.0);
+        ~PIVRegulator();
+
+        double step(double w, double previous_y, double previous_iy);
     };
 }
 

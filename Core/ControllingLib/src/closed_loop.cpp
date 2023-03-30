@@ -118,6 +118,41 @@ namespace DT
         return u;
     }
 
+    PIVRegulator::PIVRegulator(AproximationType aproxType, double P, double I, double V, double T,
+                                    double uMin, double uMax, double Kaw)
+	: P_gain(P), I_gain(I), V_gain(V), u_min(uMin), u_max(uMax), k_aw(Kaw)
+	{
+    	i_reg_integrator = std::make_unique<Integrator>(aproxType, T);
+	}
+
+	PIVRegulator::~PIVRegulator()
+	{
+	}
+
+	double PIVRegulator::step(double w, double previous_y, double previous_iy)
+	{
+//        if (integrator == nullptr || derivator == nullptr)
+//            throw std::domain_error("You must first call init() method for regulator to work properly!");
+
+		double e_1 = w - previous_iy;                                           // position error
+		double u_1 = P_gain * e_1;                                              // position correction signal
+
+		double e_2 = u_1 - previous_y;                                          // speed error
+		double u_2 = i_reg_integrator->step(e_2 * I_gain + prev_aw_gain);     // speed correction signal
+
+		double u = u_2 - previous_y * V_gain;                                   // final correction signal
+
+		// anti-wind up algorithm
+		double u_before_saturation = u;
+		if (u > u_max)          u = u_max;
+		else if (u < u_min)     u = u_min;
+		double diff = u - u_before_saturation;
+		double aw_gain = diff * k_aw;
+		prev_aw_gain = aw_gain;
+
+		return u;
+	}
+
     /*
     PID SYSTEM IMPLEMENTATIONS
     */

@@ -89,6 +89,9 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define ADC_1_PWM_TRIMER_Pin GPIO_PIN_7
 #define ADC_1_PWM_TRIMER_GPIO_Port GPIOA
+#define RESET_CLOSED_LOOP_BUTTON_Pin GPIO_PIN_10
+#define RESET_CLOSED_LOOP_BUTTON_GPIO_Port GPIOB
+#define RESET_CLOSED_LOOP_BUTTON_EXTI_IRQn EXTI15_10_IRQn
 #define RESET_EXPERIMENT_BUTTON_Pin GPIO_PIN_8
 #define RESET_EXPERIMENT_BUTTON_GPIO_Port GPIOA
 #define RESET_EXPERIMENT_BUTTON_EXTI_IRQn EXTI9_5_IRQn
