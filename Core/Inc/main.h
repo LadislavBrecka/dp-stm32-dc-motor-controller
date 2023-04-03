@@ -53,6 +53,8 @@ extern "C" {
 
 #define F_CLK  100000UL
 
+#define M_PI           3.14159265358979323846  /* pi */
+
 enum AlgorithmStage {
 	NON_IDENTIFIED = 0,
 	IDENTIFIED = 1,
