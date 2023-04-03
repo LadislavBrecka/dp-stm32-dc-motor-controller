@@ -32,5 +32,10 @@ namespace DT
             
             return vector[real_index];
         };
+
+        inline Eigen::VectorXd get_data()
+        {
+        	return vector;
+        }
     };
 }

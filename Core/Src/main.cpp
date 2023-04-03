@@ -84,11 +84,11 @@ uint16_t		hal2_level = 0;
 // HAL POSITION MEASUREMENT VARIABLES
 int32_t 	hal1_abs_pos = 0;
 int32_t 	hal1_abs_pos_of = 0;
-int32_t 	hal1_abs_pos_prev = 0;
+DT::CircleBuffer hal1_prev_pos(Eigen::VectorXd::Zero(10));
 
 int32_t 	hal2_abs_pos = 0;
 int32_t 	hal2_abs_pos_of = 0;
-int32_t 	hal2_abs_pos_prev = 0;
+DT::CircleBuffer hal2_prev_pos(Eigen::VectorXd::Zero(10));
 
 // CONTROL SYSTEM VARIABLES
 enum AlgorithmStage stage = MANUAL_MODE;
@@ -106,9 +106,6 @@ int16_t		indentification_speed_sp[2048] = {
 		 -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50,
 		 -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70, -70,
 		  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		 //		 -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99, -99,
-//		  30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
-//		  70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70,
 };
 
 DT::Identificator* identificator = nullptr;
@@ -150,7 +147,7 @@ static void MX_TIM5_Init(void);
 
 void update_abs_position();
 void phase_to_direction();
-void send_data_usart(int16_t, int32_t);
+void send_data_usart(SimData);
 void check_zero_speed();
 SimData automatic_system_loop();
 void set_motor_direction(int32_t);
@@ -657,12 +654,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 		// handler for USART data transfer to PC
 		if (stage == MANUAL_MODE)
 		{
-			send_data_usart(pwm_stride, hal1_freq);
+			send_data_usart( { pwm_stride, hal1_freq, 0, hal1_abs_pos } );
 		}
 		else
 		{
 			SimData data = automatic_system_loop();
-			send_data_usart(data.u_speed, data.y_speed);
+			send_data_usart(data);
 		}
 
 		// if rpm is zero, than HAL speed will be set to last non-zero number
@@ -725,6 +722,7 @@ SimData automatic_system_loop()
 {
 	int16_t u_speed = 0;
 	int32_t y_speed = hal1_freq;
+	int32_t w_pos = 0;
 	int32_t y_pos = hal1_abs_pos;
 
 	// IDENTIFICATION EXPERIMENT
@@ -739,8 +737,7 @@ SimData automatic_system_loop()
 		}
 		else
 		{
-			Eigen::VectorXd vx = identificator->get_thetas();
-			thetas[0] = vx[0]; thetas[1] = vx[1];
+			thetas[0] = identificator->get_thetas()[0]; thetas[1] = identificator->get_thetas()[1];
 			delete identificator;
 			identificator = nullptr;
 			stage = IDENTIFIED;
@@ -756,7 +753,7 @@ SimData automatic_system_loop()
         DT::TransferFunction dc_model(B, A);
         DT::TransferFunction c_model;
         dc_model.d2c(0.01, c_model);
-		DT::PIVRegCoefs coefs = DT::PolePlacement::PIV_0z_1p(c_model, DT::TPZ, 2.0, 0.7, 1.0);
+		DT::PIVRegCoefs coefs = DT::PolePlacement::PIV_0z_1p(c_model, DT::TPZ, 3.0, 0.9, 1.5);
 		reg_coefs[0] = coefs.P; reg_coefs[1] = coefs.I; reg_coefs[2] = coefs.V;
 		stage = MANUAL_MODE;
 	}
@@ -766,7 +763,7 @@ SimData automatic_system_loop()
 	{
 		if (closed_loop_step < (sizeof(closed_loop_pos_sp) / sizeof(* closed_loop_pos_sp)))
 		{
-			int32_t w_pos = closed_loop_pos_sp[closed_loop_step++];
+			w_pos = closed_loop_pos_sp[closed_loop_step++];
 			pwm_stride = reg->step(w_pos, y_speed, y_pos);
 		}
 		else
@@ -778,7 +775,7 @@ SimData automatic_system_loop()
 		}
 	}
 
-	return { u_speed, y_speed };
+	return { u_speed, y_speed, w_pos, y_pos };
 }
 
 void compute_hal_freq(int32_t* hal_freq, uint16_t* hal_ticks, HalState* hal_state, uint16_t* hal_level,
@@ -846,21 +843,29 @@ void update_abs_position()
 
 void check_zero_speed()
 {
-	// if there is derivative of 0 for absolute position by HAL 1 sensor,
+	// if there is last 10 samples of same value for HAL 1 absolute positions,
 	// force both HAL signals frequency to 0 - it cannot be set by computation
-	if (hal1_abs_pos_prev == hal1_abs_pos)
+	if (hal1_prev_pos.at(0) == hal1_prev_pos.at(0) &&
+		hal1_prev_pos.at(1) == hal1_prev_pos.at(0) &&
+		hal1_prev_pos.at(2) == hal1_prev_pos.at(0) &&
+		hal1_prev_pos.at(3) == hal1_prev_pos.at(0) &&
+		hal1_prev_pos.at(4) == hal1_prev_pos.at(0) &&
+		hal1_prev_pos.at(5) == hal1_prev_pos.at(0) &&
+		hal1_prev_pos.at(6) == hal1_prev_pos.at(0) &&
+		hal1_prev_pos.at(7) == hal1_prev_pos.at(0) &&
+		hal1_prev_pos.at(8) == hal1_prev_pos.at(0) &&
+		hal1_prev_pos.at(9) == hal1_prev_pos.at(0))
 	{
 		hal1_freq = 0; hal2_freq = 0;
 	}
 
-	hal1_abs_pos_prev = hal1_abs_pos;
-	hal2_abs_pos_prev = hal2_abs_pos;
+	hal1_prev_pos.add(hal1_abs_pos);
+	hal2_prev_pos.add(hal2_abs_pos);
 }
 
-void send_data_usart(int16_t u_speed, int32_t y_speed)
+void send_data_usart(SimData data)
 {
-	USART_Data data = { u_speed, y_speed, hal1_abs_pos };
-	char buffer[sizeof(data)];
+	uint8_t buffer[sizeof(data)];
 	memcpy(buffer, &data, sizeof(data));
 	HAL_UART_Transmit(&huart2, (uint8_t*)"S", sizeof("S"), 100);
 	HAL_UART_Transmit(&huart2, (uint8_t *)buffer, sizeof(data), 100);

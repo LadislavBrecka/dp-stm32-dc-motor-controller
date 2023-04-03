@@ -67,8 +67,10 @@ enum HalState {
 
 struct SimData
 {
-	int16_t u_speed;
+	int32_t u_speed;
 	int32_t y_speed;
+	int32_t w_pos;
+	int32_t y_pos;
 };
 /* USER CODE END EC */
 
@@ -103,13 +105,7 @@ void Error_Handler(void);
 #define MOTOR_DIRECTION_2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-typedef struct USART_Data USART_Data;
-struct USART_Data
-{
-	int32_t speed_set_point;
-	int32_t speed;
-	int32_t abs_pos;
-};
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
