@@ -8,6 +8,9 @@
 
 namespace DT 
 {
+
+    class TransferFunction;
+
     class TransferFunction
     {
     private:
@@ -23,6 +26,7 @@ namespace DT
         ~TransferFunction();
         double step(double u);
         void d2c(double Ts,  DT::TransferFunction& c_tf);
+        void print(const std::string& var = "z");   
 
         inline Eigen::VectorXd get_numerator() const { return B; };
         inline Eigen::VectorXd get_denominator() const { return A; };
