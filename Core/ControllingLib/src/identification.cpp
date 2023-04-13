@@ -1,7 +1,3 @@
-#include <cmath>
-#include <string>
-#include <iostream>
-
 #include "../inc/identification.h"
 
 namespace DT 
@@ -22,7 +18,6 @@ namespace DT
     Identificator::Identificator(DT::IdentificationMethodType method_type, uint num_order, uint den_order)
     : n_a(den_order), n_b(num_order)
     {
-        std::cout << "Initializing identification main class!" << std::endl;
         switch (method_type) 
         {
             case DT::LSM:

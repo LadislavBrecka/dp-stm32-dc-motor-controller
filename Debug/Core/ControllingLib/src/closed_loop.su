@@ -1,27 +1,17 @@
-/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:165:24:std::__uniq_ptr_impl<_Tp, _Dp>& std::__uniq_ptr_impl<_Tp, _Dp>::operator=(std::__uniq_ptr_impl<_Tp, _Dp>&&) [with _Tp = DT::Integrator; _Dp = std::default_delete<DT::Integrator>]	8	static
-../Core/ControllingLib/src/closed_loop.cpp:31:5:DT::Integrator::~Integrator()	8	static
-../Core/ControllingLib/src/closed_loop.cpp:58:5:DT::Derivator::~Derivator()	8	static
-../Core/ControllingLib/src/closed_loop.cpp:81:27:DT::RegulatorResponse DT::PIDRegulator::step(double, double)	72	static
-../Core/ControllingLib/src/closed_loop.cpp:118:27:DT::RegulatorResponse DT::PIVRegulator::step(double, double, double)	64	static
+../Core/ControllingLib/src/closed_loop.cpp:29:5:DT::Integrator::~Integrator()	8	static
+../Core/ControllingLib/src/closed_loop.cpp:56:5:DT::Derivator::~Derivator()	8	static
+../Core/ControllingLib/src/closed_loop.cpp:75:5:DT::PIDRegulator::~PIDRegulator()	16	static
+../Core/ControllingLib/src/closed_loop.cpp:79:27:DT::RegulatorResponse DT::PIDRegulator::step(double, double)	72	static
+../Core/ControllingLib/src/closed_loop.cpp:112:5:DT::PIVRegulator::~PIVRegulator()	16	static
+../Core/ControllingLib/src/closed_loop.cpp:116:27:DT::RegulatorResponse DT::PIVRegulator::step(double, double, double)	72	static
+../Core/ControllingLib/src/closed_loop.cpp:155:5:DT::ClosedLoopSystem_PID::~ClosedLoopSystem_PID()	16	static
 ../Core/ControllingLib/src/closed_loop.cpp:160:32:DT::ClosedLoopStepResponse DT::ClosedLoopSystem_PID::step(double)	80	static
+../Core/ControllingLib/src/closed_loop.cpp:180:5:DT::ClosedLoopSystem_PIV::~ClosedLoopSystem_PIV()	16	static
 ../Core/ControllingLib/src/closed_loop.cpp:185:32:DT::ClosedLoopStepResponse DT::ClosedLoopSystem_PIV::step(double)	88	static
-../Core/ControllingLib/src/../inc/././Eigen/src/Core/DenseStorage.h:621:23:Eigen::DenseStorage<T, -1, -1, _Cols, _Options>::~DenseStorage() [with T = double; int _Cols = 1; int _Options = 0]	8	static
-/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:355:7:std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = DT::Integrator; _Dp = std::default_delete<DT::Integrator>]	16	static
-../Core/ControllingLib/src/closed_loop.cpp:114:5:DT::PIVRegulator::~PIVRegulator()	8	static
-/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:355:7:std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = DT::Derivator; _Dp = std::default_delete<DT::Derivator>]	16	static
-../Core/ControllingLib/src/closed_loop.cpp:77:5:DT::PIDRegulator::~PIDRegulator()	8	static
-/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:355:7:std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = DT::PIDRegulator; _Dp = std::default_delete<DT::PIDRegulator>]	16	static
-../Core/ControllingLib/src/closed_loop.cpp:155:5:DT::ClosedLoopSystem_PID::~ClosedLoopSystem_PID()	8	static
-/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:355:7:std::unique_ptr<_Tp, _Dp>::~unique_ptr() [with _Tp = DT::PIVRegulator; _Dp = std::default_delete<DT::PIVRegulator>]	16	static
-../Core/ControllingLib/src/closed_loop.cpp:180:5:DT::ClosedLoopSystem_PIV::~ClosedLoopSystem_PIV()	8	static
-../Core/ControllingLib/src/../inc/././Eigen/src/Core/PlainObjectBase.h:271:30:void Eigen::PlainObjectBase<Derived>::resize(Eigen::Index, Eigen::Index) [with Derived = Eigen::Matrix<double, -1, 1>]	16	static
 ../Core/ControllingLib/src/../inc/././Eigen/src/Core/PlainObjectBase.h:552:34:Eigen::PlainObjectBase<Derived>::PlainObjectBase(const std::initializer_list<std::initializer_list<typename Eigen::internal::traits<T>::Scalar> >&) [with Derived = Eigen::Matrix<double, -1, 1>]	24	static
-../Core/ControllingLib/src/closed_loop.cpp:11:5:DT::Integrator::Integrator(DT::AproximationType, double)	72	static
-/opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:961:5:) [with _Tp = DT::Integrator; _Args = {DT::AproximationType&, double&}]	32	static
-../Core/ControllingLib/src/closed_loop.cpp:171:5:DT::ClosedLoopSystem_PIV::ClosedLoopSystem_PIV(DT::TransferFunction*, DT::AproximationType, double, double, double, double, double, double, double)	120	static
-../Core/ControllingLib/src/closed_loop.cpp:107:5:DT::PIVRegulator::PIVRegulator(DT::AproximationType, double, double, double, double, double, double, double)	32	static
-../Core/ControllingLib/src/closed_loop.cpp:38:5:DT::Derivator::Derivator(DT::AproximationType, double, double)	80	static
-../Core/ControllingLib/src/closed_loop.cpp:69:5:DT::PIDRegulator::PIDRegulator(DT::AproximationType, double, double, double, double, double, double, double, double)	56	static
-../Core/ControllingLib/src/closed_loop.cpp:147:5:DT::ClosedLoopSystem_PID::ClosedLoopSystem_PID(DT::TransferFunction*, DT::AproximationType, double, double, double, double, double, double, double, double)	104	static
-../Core/ControllingLib/src/closed_loop.cpp:194:1:cpp)	0	static
-../Core/ControllingLib/src/closed_loop.cpp:194:1:cpp)	0	static
+../Core/ControllingLib/src/closed_loop.cpp:9:5:DT::Integrator::Integrator(DT::AproximationType, double)	184	static
+../Core/ControllingLib/src/closed_loop.cpp:105:5:DT::PIVRegulator::PIVRegulator(DT::AproximationType, double, double, double, double, double, double, double)	40	static
+../Core/ControllingLib/src/closed_loop.cpp:171:5:DT::ClosedLoopSystem_PIV::ClosedLoopSystem_PIV(DT::TransferFunction*, DT::AproximationType, double, double, double, double, double, double, double)	88	static
+../Core/ControllingLib/src/closed_loop.cpp:36:5:DT::Derivator::Derivator(DT::AproximationType, double, double)	192	static
+../Core/ControllingLib/src/closed_loop.cpp:67:5:DT::PIDRegulator::PIDRegulator(DT::AproximationType, double, double, double, double, double, double, double, double)	48	static
+../Core/ControllingLib/src/closed_loop.cpp:147:5:DT::ClosedLoopSystem_PID::ClosedLoopSystem_PID(DT::TransferFunction*, DT::AproximationType, double, double, double, double, double, double, double, double)	96	static

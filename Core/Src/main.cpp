@@ -21,8 +21,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include<stdio.h>
-#include<string.h>
 
 //#include "ident_handler.h"
 
@@ -92,7 +90,11 @@ int32_t 	hal2_abs_pos_of = 0;
 DT::CircleBuffer hal2_prev_pos(Eigen::VectorXd::Zero(10));
 
 // CONTROL SYSTEM VARIABLES
-enum AlgorithmStage stage = MANUAL_MODE;
+#ifdef SKIP_IDENTIFICATION
+	enum AlgorithmStage stage = IDENTIFIED;
+#else
+	enum AlgorithmStage stage = MANUAL_MODE;
+#endif
 
 // IDENTIFICATION VARIABLES
 uint32_t identification_step = 0;
@@ -110,8 +112,11 @@ int16_t		indentification_speed_sp[2048] = {
 };
 
 DT::Identificator* identificator = nullptr;
-double thetas[2] = { 0, 0 };
-double reg_coefs[3] = { 0, 0, 0 };
+#ifdef SKIP_IDENTIFICATION
+	double thetas[2] = { THETA_0, THETA_1 };
+#else
+	double thetas[2] = { 0, 0 };
+#endif
 
 // CLOSED LOOP VARIABLES
 uint32_t closed_loop_step = 0;
@@ -139,6 +144,7 @@ int16_t		closed_loop_pos_sp[4096] = {
 };
 
 DT::PIVRegulator* reg = nullptr;
+double reg_coefs[3] = { 0, 0, 0 };
 
 /* USER CODE END PV */
 
@@ -167,6 +173,12 @@ void compute_hal_freq(int32_t*, uint16_t*, HalState*, uint16_t*, TIM_TypeDef*, i
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+// EXPERIMENTAL VARIABLES
+double omega = 4;
+double b = 0.9;
+double k = 2;
+double aw = 5.0;
 
 /* USER CODE END 0 */
 
@@ -227,6 +239,7 @@ int main(void)
 
   // SETTING INITIAL STATE
   TIM2->CCR2 = (htim2.Init.Period * 0) / 100u; // setting up initial PWM stride to 0%
+  hal1_abs_pos = 0; hal2_abs_pos = 0;
 
   while (1) {
     /* USER CODE END WHILE */
@@ -716,7 +729,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   }
   else if(GPIO_Pin == RESET_CLOSED_LOOP_BUTTON_Pin)
   {
-	  reg = new DT::PIVRegulator(DT::TPZ, reg_coefs[0], reg_coefs[1], reg_coefs[2], 0.01, -100.0, 100.0, 1.0);
+	  reg = new DT::PIVRegulator(DT::TPZ, reg_coefs[0], reg_coefs[1], reg_coefs[2], 0.01, -100.0, 100.0, aw);
 	  stage = READY_FOR_REGULATION;
 	  closed_loop_step = 0;
   }
@@ -761,8 +774,18 @@ SimData automatic_system_loop()
         DT::TransferFunction dc_model(B, A);
         DT::TransferFunction c_model;
         dc_model.d2c(0.01, c_model);
-		DT::PIVRegCoefs coefs = DT::PolePlacement::PIV_0z_1p(c_model, DT::TPZ, 3.0, 0.9, 1.5);
+		DT::PIVRegCoefs coefs = DT::PolePlacement::PIV_0z_1p(c_model, DT::TPZ, omega, b, k); // w, b, k
 		reg_coefs[0] = coefs.P; reg_coefs[1] = coefs.I; reg_coefs[2] = coefs.V;
+
+//		reg_coefs[0] = 0.78947368421052622;
+//		reg_coefs[1] = 2.0208788223827336;
+//		reg_coefs[2] = 0.49722908302645674;
+
+
+		// set absolute position to 0
+		hal1_abs_pos = 0; hal2_abs_pos = 0;
+
+		// set mode to manual
 		stage = MANUAL_MODE;
 	}
 

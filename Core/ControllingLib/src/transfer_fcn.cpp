@@ -1,6 +1,3 @@
-#include <cmath>
-#include <iostream>
-
 #include "../inc/transfer_fcn.h"
 #include "../inc/Eigen/unsupported/Polynomials"
 
@@ -92,61 +89,6 @@ namespace DT {
         c_tf.set_numerator(c_B);
     }
     
-    void TransferFunction::print(const std::string& var)
-    {
-        // nominator printing
-        std::cout << std::endl << std::endl;
-        for (uint i = 0; i < n_b; i++)
-        {
-            if (B[i] != 0.0)
-            {
-                if (B[i] > 0.0 && i != 0) 
-                    std::cout << " + "; 
-                else if (B[i] > 0.0 && i == 0 ) 
-                    std::cout << "";
-                else 
-                    std::cout << "-";   
-
-                std::string indexed_variable = convert_to_uper(n_b-1-i, var);
-                if (i == 0 && B[i] == 1)
-                    std::cout << indexed_variable;
-                else                
-                    std::cout << fabs(B[i]) << indexed_variable;
-            }
-        }
-
-        // dividing line printing
-        std::cout << std::endl;
-        for (uint i = 0; i < std::max(n_a, n_b) * 8; i++)
-        {
-            std::cout << "-";
-        }
-        std::cout << std::endl;
-
-        // denominator printing
-        for (uint i = 0; i < n_a; i++)
-        {
-            if (A[i] != 0.0)
-            {
-                if (A[i] > 0.0 && i != 0) 
-                    std::cout << " + "; 
-                else if (A[i] > 0.0)
-                    std::cout << "";
-                else 
-                    std::cout << " - ";
-
-                std::string indexed_variable = convert_to_uper(n_a-1-i, var);
-                if (i == 0 && A[i] == 1)
-                    std::cout << indexed_variable;
-                else                
-                    std::cout << fabs(A[i]) << indexed_variable;
-            }
-        }
-
-        // new line at the end
-        std::cout << std::endl << std::endl;
-    }
-    
     void TransferFunction::set_numerator(Eigen::VectorXd numerator)
     {
         n_b = numerator.size();
@@ -175,18 +117,4 @@ namespace DT {
         vY = std::make_unique<DT::CircleBuffer>(Eigen::VectorXd::Zero(n_a));
     }
 
-}
-
-std::string convert_to_uper(int index, std::string var) 
-{
-    switch(abs(index))
-    {
-        case 0: return "";
-        case 1: return var;
-        case 2: return var + "^2";
-        case 3: return var + "^3";
-        case 4: return var + "^4";
-        case 5: return var + "^5";
-        default: return "";
-    }
 }

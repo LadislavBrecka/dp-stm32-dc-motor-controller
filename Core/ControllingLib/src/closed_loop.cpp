@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "../inc/closed_loop.h"
 #include "../inc/Eigen/Dense"
 
@@ -117,13 +115,15 @@ namespace DT
 
     DT::RegulatorResponse PIVRegulator::step(double w, double previous_y, double previous_iy)
     {
-        double e_1 = w - previous_iy; // position error
-        double u_1 = P_gain * e_1;    // position correction signal
+        double e_1 = w - previous_iy;  // position error
+        if (abs(e_1) <= 2) e_1 = 0;    // give dead-zone to error signal
+        double u_1 = P_gain * e_1;     // position correction signal
 
         double e_2 = u_1 - previous_y;                                    // speed error
         double u_2 = i_reg_integrator->step(e_2 * I_gain + prev_aw_gain); // speed correction signal
 
-        double u = u_2 - previous_y * V_gain; // final correction signal
+        double u = u_2 - previous_y * V_gain;  // final correction signal
+//        if (abs(u) < 20) u = 0;				   // give dead-zone to correction signal
 
         // anti-wind up algorithm
         double u_before_saturation = u;

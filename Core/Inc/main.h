@@ -42,6 +42,10 @@ extern "C" {
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
 
+#define SKIP_IDENTIFICATION
+#define THETA_0 -0.97343313690447564
+#define THETA_1 0.08348760837171855
+
 #define PWM_MIN -100
 #define PWM_MAX 100
 

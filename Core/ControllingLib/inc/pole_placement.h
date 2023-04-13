@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cassert>
-#include <iostream>
 
 #include "./Eigen/Dense"
 #include "./transfer_fcn.h"
@@ -26,11 +25,10 @@ namespace DT
     namespace PolePlacement
     {
         // 0 zeros, 1 pole
-        PIVRegCoefs PIV_0z_1p(const DT::TransferFunction& tf, DT::AproximationType aprox_type, double omega, double b, double k)
+        DT::PIVRegCoefs PIV_0z_1p(const DT::TransferFunction& tf, DT::AproximationType aprox_type, double omega, double b, double k)
         {
             if (aprox_type == DT::PSD)
             {
-                std::cout << "Cannot proceed with pole placement for PSD regulator type" << std::endl;
                 return { 0, 0, 0};
             }
 
@@ -53,7 +51,6 @@ namespace DT
         {
             if (aprox_type == DT::PSD)
             {
-                std::cout << "Cannot proceed with pole placement for PSD regulator type" << std::endl;
                 return { 0, 0, 0};
             }
 
