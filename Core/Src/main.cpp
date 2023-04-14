@@ -175,10 +175,10 @@ void compute_hal_freq(int32_t*, uint16_t*, HalState*, uint16_t*, TIM_TypeDef*, i
 /* USER CODE BEGIN 0 */
 
 // EXPERIMENTAL VARIABLES
-double omega = 4;
-double b = 0.9;
-double k = 2;
-double aw = 5.0;
+double omega = 4.2;
+double b = 0.95;
+double k = 1.8;
+double aw = 2.7;
 
 /* USER CODE END 0 */
 
@@ -614,17 +614,23 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, MOTOR_DIRECTION_1_Pin|MOTOR_DIRECTION_2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : RESET_CLOSED_LOOP_BUTTON_Pin */
-  GPIO_InitStruct.Pin = RESET_CLOSED_LOOP_BUTTON_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(RESET_CLOSED_LOOP_BUTTON_GPIO_Port, &GPIO_InitStruct);
+  /*Configure GPIO pin : RESET_POS_BUTTON_Pin */
+   GPIO_InitStruct.Pin = RESET_POS_BUTTON_Pin;
+   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+   GPIO_InitStruct.Pull = GPIO_NOPULL;
+   HAL_GPIO_Init(RESET_POS_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : RESET_EXPERIMENT_BUTTON_Pin */
-  GPIO_InitStruct.Pin = RESET_EXPERIMENT_BUTTON_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(RESET_EXPERIMENT_BUTTON_GPIO_Port, &GPIO_InitStruct);
+   /*Configure GPIO pin : RESET_EXPERIMENT_BUTTON_Pin */
+   GPIO_InitStruct.Pin = RESET_EXPERIMENT_BUTTON_Pin;
+   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+   GPIO_InitStruct.Pull = GPIO_NOPULL;
+   HAL_GPIO_Init(RESET_EXPERIMENT_BUTTON_GPIO_Port, &GPIO_InitStruct);
+
+   /*Configure GPIO pin : RESET_CLOSED_LOOP_BUTTON_Pin */
+   GPIO_InitStruct.Pin = RESET_CLOSED_LOOP_BUTTON_Pin;
+   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+   GPIO_InitStruct.Pull = GPIO_NOPULL;
+   HAL_GPIO_Init(RESET_CLOSED_LOOP_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : MOTOR_DIRECTION_1_Pin MOTOR_DIRECTION_2_Pin */
   GPIO_InitStruct.Pin = MOTOR_DIRECTION_1_Pin|MOTOR_DIRECTION_2_Pin;
@@ -732,6 +738,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	  reg = new DT::PIVRegulator(DT::TPZ, reg_coefs[0], reg_coefs[1], reg_coefs[2], 0.01, -100.0, 100.0, aw);
 	  stage = READY_FOR_REGULATION;
 	  closed_loop_step = 0;
+  }
+  else if(GPIO_Pin == RESET_POS_BUTTON_Pin)
+  {
+	  hal1_abs_pos = 0; hal2_abs_pos = 0;
   }
   else
   {
