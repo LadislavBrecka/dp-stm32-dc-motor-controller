@@ -20,10 +20,8 @@ namespace DT
     {
         switch (method_type) 
         {
-            case DT::LSM:
-                method = std::make_unique<DT::LeastSquareMethod>(n_a + n_b);
-                break;
             default:
+            case DT::LSM:
                 method = std::make_unique<DT::LeastSquareMethod>(n_a + n_b);
                 break;
         }

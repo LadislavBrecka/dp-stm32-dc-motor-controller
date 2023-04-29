@@ -215,15 +215,6 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  ../Core/Src/../ControllingLib/inc/./Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
  ../Core/Src/../ControllingLib/inc/./Eigen/src/Eigenvalues/./RealQZ.h \
  ../Core/Src/../ControllingLib/inc/./Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
- ../Core/Src/../ControllingLib/inc/../inc/eigen_formatter.h \
- ../Core/Src/../ControllingLib/inc/../inc/./Eigen/Dense \
- ../Core/Src/../ControllingLib/inc/../inc/./Eigen/Core \
- ../Core/Src/../ControllingLib/inc/../inc/./Eigen/LU \
- ../Core/Src/../ControllingLib/inc/../inc/./Eigen/Cholesky \
- ../Core/Src/../ControllingLib/inc/../inc/./Eigen/QR \
- ../Core/Src/../ControllingLib/inc/../inc/./Eigen/SVD \
- ../Core/Src/../ControllingLib/inc/../inc/./Eigen/Geometry \
- ../Core/Src/../ControllingLib/inc/../inc/./Eigen/Eigenvalues \
  ../Core/Src/../ControllingLib/inc/./common_types.h \
  ../Core/Src/../ControllingLib/inc/pole_placement.h \
  ../Core/Src/../ControllingLib/inc/./transfer_fcn.h \
@@ -235,8 +226,24 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  ../Core/Src/../ControllingLib/inc/././Eigen/SVD \
  ../Core/Src/../ControllingLib/inc/././Eigen/Geometry \
  ../Core/Src/../ControllingLib/inc/././Eigen/Eigenvalues \
- ../Core/Src/../ControllingLib/inc/./circle_buffer.h \
- ../Core/Src/../ControllingLib/inc/./Eigen/Dense \
+ ../Core/Src/../ControllingLib/inc/././Eigen/unsupported/Polynomials \
+ ../Core/Src/../ControllingLib/inc/././Eigen/unsupported/../../Eigen/Core \
+ ../Core/Src/../ControllingLib/inc/././Eigen/unsupported/../../Eigen/Eigenvalues \
+ ../Core/Src/../ControllingLib/inc/././Eigen/unsupported/../../Eigen/src/Core/util/DisableStupidWarnings.h \
+ ../Core/Src/../ControllingLib/inc/././Eigen/unsupported/src/Polynomials/PolynomialUtils.h \
+ ../Core/Src/../ControllingLib/inc/././Eigen/unsupported/src/Polynomials/./InternalHeaderCheck.h \
+ ../Core/Src/../ControllingLib/inc/././Eigen/unsupported/src/Polynomials/Companion.h \
+ ../Core/Src/../ControllingLib/inc/././Eigen/unsupported/src/Polynomials/PolynomialSolver.h \
+ ../Core/Src/../ControllingLib/inc/././Eigen/unsupported/../../Eigen/src/Core/util/ReenableStupidWarnings.h \
+ ../Core/Src/../ControllingLib/inc/././circle_buffer.h \
+ ../Core/Src/../ControllingLib/inc/./././Eigen/Dense \
+ ../Core/Src/../ControllingLib/inc/./././Eigen/Core \
+ ../Core/Src/../ControllingLib/inc/./././Eigen/LU \
+ ../Core/Src/../ControllingLib/inc/./././Eigen/Cholesky \
+ ../Core/Src/../ControllingLib/inc/./././Eigen/QR \
+ ../Core/Src/../ControllingLib/inc/./././Eigen/SVD \
+ ../Core/Src/../ControllingLib/inc/./././Eigen/Geometry \
+ ../Core/Src/../ControllingLib/inc/./././Eigen/Eigenvalues \
  ../Core/Src/../ControllingLib/inc/closed_loop.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -455,15 +462,6 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 ../Core/Src/../ControllingLib/inc/./Eigen/src/Eigenvalues/GeneralizedEigenSolver.h:
 ../Core/Src/../ControllingLib/inc/./Eigen/src/Eigenvalues/./RealQZ.h:
 ../Core/Src/../ControllingLib/inc/./Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h:
-../Core/Src/../ControllingLib/inc/../inc/eigen_formatter.h:
-../Core/Src/../ControllingLib/inc/../inc/./Eigen/Dense:
-../Core/Src/../ControllingLib/inc/../inc/./Eigen/Core:
-../Core/Src/../ControllingLib/inc/../inc/./Eigen/LU:
-../Core/Src/../ControllingLib/inc/../inc/./Eigen/Cholesky:
-../Core/Src/../ControllingLib/inc/../inc/./Eigen/QR:
-../Core/Src/../ControllingLib/inc/../inc/./Eigen/SVD:
-../Core/Src/../ControllingLib/inc/../inc/./Eigen/Geometry:
-../Core/Src/../ControllingLib/inc/../inc/./Eigen/Eigenvalues:
 ../Core/Src/../ControllingLib/inc/./common_types.h:
 ../Core/Src/../ControllingLib/inc/pole_placement.h:
 ../Core/Src/../ControllingLib/inc/./transfer_fcn.h:
@@ -475,6 +473,22 @@ Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
 ../Core/Src/../ControllingLib/inc/././Eigen/SVD:
 ../Core/Src/../ControllingLib/inc/././Eigen/Geometry:
 ../Core/Src/../ControllingLib/inc/././Eigen/Eigenvalues:
-../Core/Src/../ControllingLib/inc/./circle_buffer.h:
-../Core/Src/../ControllingLib/inc/./Eigen/Dense:
+../Core/Src/../ControllingLib/inc/././Eigen/unsupported/Polynomials:
+../Core/Src/../ControllingLib/inc/././Eigen/unsupported/../../Eigen/Core:
+../Core/Src/../ControllingLib/inc/././Eigen/unsupported/../../Eigen/Eigenvalues:
+../Core/Src/../ControllingLib/inc/././Eigen/unsupported/../../Eigen/src/Core/util/DisableStupidWarnings.h:
+../Core/Src/../ControllingLib/inc/././Eigen/unsupported/src/Polynomials/PolynomialUtils.h:
+../Core/Src/../ControllingLib/inc/././Eigen/unsupported/src/Polynomials/./InternalHeaderCheck.h:
+../Core/Src/../ControllingLib/inc/././Eigen/unsupported/src/Polynomials/Companion.h:
+../Core/Src/../ControllingLib/inc/././Eigen/unsupported/src/Polynomials/PolynomialSolver.h:
+../Core/Src/../ControllingLib/inc/././Eigen/unsupported/../../Eigen/src/Core/util/ReenableStupidWarnings.h:
+../Core/Src/../ControllingLib/inc/././circle_buffer.h:
+../Core/Src/../ControllingLib/inc/./././Eigen/Dense:
+../Core/Src/../ControllingLib/inc/./././Eigen/Core:
+../Core/Src/../ControllingLib/inc/./././Eigen/LU:
+../Core/Src/../ControllingLib/inc/./././Eigen/Cholesky:
+../Core/Src/../ControllingLib/inc/./././Eigen/QR:
+../Core/Src/../ControllingLib/inc/./././Eigen/SVD:
+../Core/Src/../ControllingLib/inc/./././Eigen/Geometry:
+../Core/Src/../ControllingLib/inc/./././Eigen/Eigenvalues:
 ../Core/Src/../ControllingLib/inc/closed_loop.h:

@@ -3,7 +3,6 @@
 #include <memory>
 
 #include "./Eigen/Dense"
-#include "../inc/eigen_formatter.h"
 #include "./common_types.h"
 
 namespace DT 
@@ -75,9 +74,7 @@ namespace DT {
     private:
         Eigen::MatrixXd P;
         Eigen::VectorXd d;
-        double e;
-        double ro;
-        double Q;
+        double e, ro, Q;
 
     public:
         LeastSquareMethod(uint n_params);

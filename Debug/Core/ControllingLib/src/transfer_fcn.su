@@ -1,13 +1,13 @@
-../Core/ControllingLib/src/transfer_fcn.cpp:26:5:DT::TransferFunction::~TransferFunction()	16	static
-../Core/ControllingLib/src/transfer_fcn.cpp:30:12:double DT::TransferFunction::step(double)	72	static
+../Core/ControllingLib/src/transfer_fcn.cpp:28:5:DT::TransferFunction::~TransferFunction()	16	static
+../Core/ControllingLib/src/transfer_fcn.cpp:32:12:double DT::TransferFunction::step(double)	72	static
 /opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/unique_ptr.h:961:5:) [with _Tp = DT::CircleBuffer; _Args = {const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<double>, Eigen::Matrix<double, -1, 1, 0, -1, 1> >}]	64	static
-../Core/ControllingLib/src/transfer_fcn.cpp:92:10:void DT::TransferFunction::set_numerator(Eigen::VectorXd)	80	static
-../Core/ControllingLib/src/transfer_fcn.cpp:106:10:void DT::TransferFunction::set_denominator(Eigen::VectorXd)	80	static
-../Core/ControllingLib/src/transfer_fcn.cpp:8:5:DT::TransferFunction::TransferFunction()	80	static
-../Core/ControllingLib/src/transfer_fcn.cpp:99:10:void DT::TransferFunction::set_numerator(std::vector<double>)	96	static
-../Core/ControllingLib/src/transfer_fcn.cpp:113:10:void DT::TransferFunction::set_denominator(std::vector<double>)	96	static
+../Core/ControllingLib/src/transfer_fcn.cpp:152:10:void DT::TransferFunction::set_numerator(Eigen::VectorXd)	80	static
+../Core/ControllingLib/src/transfer_fcn.cpp:166:10:void DT::TransferFunction::set_denominator(Eigen::VectorXd)	80	static
+../Core/ControllingLib/src/transfer_fcn.cpp:10:5:DT::TransferFunction::TransferFunction()	80	static
+../Core/ControllingLib/src/transfer_fcn.cpp:159:10:void DT::TransferFunction::set_numerator(std::vector<double>)	96	static
+../Core/ControllingLib/src/transfer_fcn.cpp:173:10:void DT::TransferFunction::set_denominator(std::vector<double>)	96	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Core/util/Memory.h:515:45:void Eigen::internal::smart_copy(const T*, const T*, T*) [with T = double]	8	static
-../Core/ControllingLib/src/transfer_fcn.cpp:14:5:DT::TransferFunction::TransferFunction(Eigen::VectorXd, Eigen::VectorXd)	32	static
+../Core/ControllingLib/src/transfer_fcn.cpp:16:5:DT::TransferFunction::TransferFunction(Eigen::VectorXd, Eigen::VectorXd)	32	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Core/Dot.h:72:1:typename Eigen::ScalarBinaryOpTraits<typename Eigen::internal::traits<T>::Scalar, typename Eigen::internal::traits<OtherDerived>::Scalar>::ReturnType Eigen::MatrixBase<Derived>::dot(const Eigen::MatrixBase<OtherDerived>&) const [with OtherDerived = Eigen::Block<Eigen::Block<Eigen::Matrix<double, -1, -1>, -1, 1, true>, -1, 1, false>; Derived = Eigen::Block<Eigen::Block<Eigen::Matrix<double, -1, -1>, 1, -1, false>, 1, -1, false>]	216	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Core/NoAlias.h:102:47:Eigen::NoAlias<Derived, Eigen::MatrixBase> Eigen::MatrixBase<Derived>::noalias() [with Derived = Eigen::Matrix<double, -1, 1>]	0	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Core/util/Memory.h:515:45:void Eigen::internal::smart_copy(const T*, const T*, T*) [with T = std::complex<double>]	8	static
@@ -28,9 +28,9 @@
 ../Core/ControllingLib/src/../inc/./Eigen/src/Core/MathFunctions.h:1852:24:bool Eigen::internal::isfinite_impl(const std::complex<_Tp>&) [with T = double]	24	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Core/MathFunctions.h:1372:46:bool Eigen::numext::isfinite(const T&) [with T = std::complex<double>]	8	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Core/AssignEvaluator.h:791:44:void Eigen::internal::call_dense_assignment_loop(DstXprType&, const Eigen::CwiseNullaryOp<Eigen::internal::scalar_constant_op<typename DstXprType::Scalar>, DstXprType>&, const Eigen::internal::assign_op<typename DstXprType::Scalar, typename DstXprType::Scalar>&) [with DstXprType = Eigen::Matrix<std::complex<double>, -1, 1>]	16	static
-../Core/ControllingLib/src/../inc/Eigen/unsupported/src/Polynomials/PolynomialUtils.h:129:6:void Eigen::roots_to_monicPolynomial(const RootVector&, Polynomial&) [with RootVector = Eigen::Matrix<std::complex<double>, -1, 1>; Polynomial = Eigen::Matrix<std::complex<double>, -1, 1>]	192	static
+../Core/ControllingLib/src/../inc/./Eigen/unsupported/src/Polynomials/PolynomialUtils.h:129:6:void Eigen::roots_to_monicPolynomial(const RootVector&, Polynomial&) [with RootVector = Eigen::Matrix<std::complex<double>, -1, 1>; Polynomial = Eigen::Matrix<std::complex<double>, -1, 1>]	192	static
 /opt/st/stm32cubeide_1.11.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.10.3-2021.10.linux64_1.0.100.202210260954/tools/arm-none-eabi/include/c++/10.3.1/bits/stl_iterator.h:1225:5:_Iterator std::__niter_base(__gnu_cxx::__normal_iterator<_Iterator, _Container>) [with _Iterator = const double*; _Container = std::vector<double>]	0	static
-../Core/ControllingLib/src/transfer_fcn.cpp:20:5:DT::TransferFunction::TransferFunction(std::vector<double>, std::vector<double>)	56	static
+../Core/ControllingLib/src/transfer_fcn.cpp:22:5:DT::TransferFunction::TransferFunction(std::vector<double>, std::vector<double>)	56	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Householder/Householder.h:67:6:void Eigen::MatrixBase<Derived>::makeHouseholder(EssentialPart&, Eigen::MatrixBase<Derived>::Scalar&, Eigen::MatrixBase<Derived>::RealScalar&) const [with EssentialPart = Eigen::VectorBlock<Eigen::Block<Eigen::Block<Eigen::Matrix<double, -1, -1>, -1, 1, true>, -1, 1, false>, -1>; Derived = Eigen::Block<Eigen::Block<Eigen::Matrix<double, -1, -1>, -1, 1, true>, -1, 1, false>]	368	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Householder/Householder.h:43:6:void Eigen::MatrixBase<Derived>::makeHouseholderInPlace(Eigen::MatrixBase<Derived>::Scalar&, Eigen::MatrixBase<Derived>::RealScalar&) [with Derived = Eigen::Block<Eigen::Block<Eigen::Matrix<double, -1, -1>, -1, 1, true>, -1, 1, false>]	104	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Core/NoAlias.h:102:47:Eigen::NoAlias<Derived, Eigen::MatrixBase> Eigen::MatrixBase<Derived>::noalias() [with Derived = Eigen::Block<Eigen::Block<Eigen::Matrix<double, -1, -1>, -1, -1, true>, -1, -1, false>]	0	static
@@ -114,4 +114,4 @@
 ../Core/ControllingLib/src/../inc/./Eigen/src/Householder/HouseholderSequence.h:290:10:void Eigen::HouseholderSequence<VectorsType, CoeffsType, Side>::evalTo(Dest&, Workspace&) const [with Dest = Eigen::Matrix<double, -1, -1>; Workspace = Eigen::Matrix<double, -1, 1>; VectorsType = Eigen::Matrix<double, -1, -1>; CoeffsType = Eigen::Matrix<double, -1, 1>; int Side = 1]	536	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Eigenvalues/RealSchur.h:249:24:Eigen::RealSchur<MatrixType>& Eigen::RealSchur<_MatrixType>::compute(const Eigen::EigenBase<OtherDerived>&, bool) [with InputType = Eigen::Matrix<double, -1, -1>; _MatrixType = Eigen::Matrix<double, -1, -1>]	320	static
 ../Core/ControllingLib/src/../inc/./Eigen/src/Eigenvalues/EigenSolver.h:379:1:Eigen::EigenSolver<MatrixType>& Eigen::EigenSolver<_MatrixType>::compute(const Eigen::EigenBase<OtherDerived>&, bool) [with InputType = Eigen::Matrix<double, -1, -1>; _MatrixType = Eigen::Matrix<double, -1, -1>]	184	static
-../Core/ControllingLib/src/transfer_fcn.cpp:57:10:void DT::TransferFunction::d2c(double, DT::TransferFunction&)	544	static
+../Core/ControllingLib/src/transfer_fcn.cpp:59:10:void DT::TransferFunction::d2c(double, DT::TransferFunction&)	544	static

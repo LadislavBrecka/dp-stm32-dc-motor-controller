@@ -1,43 +1,37 @@
 #pragma once
 
-#include <cassert>
-
 #include "./Eigen/Dense"
 #include "./transfer_fcn.h"
 #include "./common_types.h"
 
 namespace DT
 {
-    struct PIDRegCoefs
-    {
-        double P;
-        double I;
-        double D;
-    };
-
-    struct PIVRegCoefs
-    {
-        double P;
-        double I;
-        double V;
-    };
-
     namespace PolePlacement
     {
         // 0 zeros, 1 pole
-        DT::PIVRegCoefs PIV_0z_1p(const DT::TransferFunction& tf, DT::AproximationType aprox_type, double omega, double b, double k)
+        PIVRegCoefs PIV_0z_1p(const DT::TransferFunction& tf, DT::AproximationType aprox_type, double omega, double b, double k)
         {
             if (aprox_type == DT::PSD)
             {
-                return { 0, 0, 0};
+#ifdef __x86_64__
+                throw std::runtime_error("Cannot compute Pole Placement for PSD regulators!");
+#else
+                return {0,0,0};
+#endif
             }
 
             const Eigen::VectorXd A = tf.get_denominator();
             const Eigen::VectorXd B = tf.get_numerator();
 
-            // assert all conditions
-            assert(B.size() == 1);
-            assert(A.size() == 2);
+            // check conditions
+            if (A.size() != 2 || B.size() != 1)
+            {
+#ifdef __x86_64__
+                throw std::runtime_error("TF has wrong format!");
+#else
+                return {0,0,0};
+#endif
+            }
 
             double V = ((2*b*omega + k) * A[0] - 1) / B[0];
             double I = ((pow(omega, 2) + 2*b*omega*k) * A[0]) / B[0];
@@ -51,15 +45,25 @@ namespace DT
         {
             if (aprox_type == DT::PSD)
             {
-                return { 0, 0, 0};
+#ifdef __x86_64__
+                throw std::runtime_error("Cannot compute Pole Placement for PSD regulators!");
+#else
+                return {0,0,0};
+#endif
             }
 
             const Eigen::VectorXd A = tf.get_denominator();
             const Eigen::VectorXd B = tf.get_numerator();
 
-            assert(B.size() == 1);
-            assert(A.size() == 3);
-            assert(A[0] == 1.0);
+            // check conditions
+            if (A.size() != 3 || B.size() != 1 || A[0] != 1.0)
+            {
+#ifdef __x86_64__
+                throw std::runtime_error("TF has wrong format!");
+#else
+                return {0,0,0};
+#endif
+            }
 
             double P = (pow(omega, 2) + 2*b*omega*k - A[2]) / B[0];
             double I = (pow(omega, 2) * k) / B[0];

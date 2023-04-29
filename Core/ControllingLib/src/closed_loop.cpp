@@ -1,5 +1,4 @@
 #include "../inc/closed_loop.h"
-#include "../inc/Eigen/Dense"
 
 namespace DT
 {
@@ -10,19 +9,16 @@ namespace DT
     {
         switch (aprox_type)
         {
-        case DT::TPZ:
-        {
-            set_numerator(Eigen::VectorXd{{T, T}});
-            set_denominator(Eigen::VectorXd{{2.0, -2.0}});
-            break;
-        }
+            default:
+            case DT::TPZ:
+                set_numerator(Eigen::VectorXd{{T, T}});
+                set_denominator(Eigen::VectorXd{{2.0, -2.0}});
+                break;
 
-        case DT::PSD:
-        {
-            set_numerator(Eigen::VectorXd{{1.0, 0.0}});
-            set_denominator(Eigen::VectorXd{{1.0, -1.0}});
-            break;
-        }
+            case DT::PSD:
+                set_numerator(Eigen::VectorXd{{1.0, 0.0}});
+                set_denominator(Eigen::VectorXd{{1.0, -1.0}});
+                break;
         }
     }
 
@@ -37,19 +33,16 @@ namespace DT
     {
         switch (aprox_type)
         {
-        case DT::TPZ:
-        {
-            set_numerator(Eigen::VectorXd{{N, -N}});
-            set_denominator(Eigen::VectorXd{{N * (T / 2.0) + 1.0, N * (T / 2.0) - 1.0}});
-            break;
-        }
+            default:
+            case DT::TPZ:
+                set_numerator(Eigen::VectorXd{{N, -N}});
+                set_denominator(Eigen::VectorXd{{N * (T / 2.0) + 1.0, N * (T / 2.0) - 1.0}});
+                break;
 
-        case DT::PSD:
-        {
-            set_numerator(Eigen::VectorXd{{1.0, -1.0}});
-            set_denominator(Eigen::VectorXd{{1.0, 0.0}});
-            break;
-        }
+            case DT::PSD:
+                set_numerator(Eigen::VectorXd{{1.0, -1.0}});
+                set_denominator(Eigen::VectorXd{{1.0, 0.0}});
+                break;
         }
     }
 
@@ -76,9 +69,9 @@ namespace DT
     {
     }
 
-    DT::RegulatorResponse PIDRegulator::step(double w, double previous_y)
+    DT::RegulatorResponse PIDRegulator::step(double w, double prev_y)
     {
-        double e = w - previous_y;
+        double e = w - prev_y;
     
         double p_y = P_gain * e;
         double i_y = integrator->step(e * I_gain + prev_aw_gain);
@@ -113,17 +106,15 @@ namespace DT
     {
     }
 
-    DT::RegulatorResponse PIVRegulator::step(double w, double previous_y, double previous_iy)
+    DT::RegulatorResponse PIVRegulator::step(double w, double prev_y, double prev_iy)
     {
-        double e_1 = w - previous_iy;  // position error
-        if (abs(e_1) <= 2) e_1 = 0;    // give dead-zone to error signal
-        double u_1 = P_gain * e_1;     // position correction signal
+        double e_1 = w - prev_iy; // position error
+        double u_1 = P_gain * e_1;    // position correction signal
 
-        double e_2 = u_1 - previous_y;                                    // speed error
+        double e_2 = u_1 - prev_y;                                    // speed error
         double u_2 = i_reg_integrator->step(e_2 * I_gain + prev_aw_gain); // speed correction signal
 
-        double u = u_2 - previous_y * V_gain;  // final correction signal
-//        if (abs(u) < 20) u = 0;				   // give dead-zone to correction signal
+        double u = u_2 - prev_y * V_gain; // final correction signal
 
         // anti-wind up algorithm
         double u_before_saturation = u;
@@ -159,9 +150,9 @@ namespace DT
 
     DT::ClosedLoopStepResponse ClosedLoopSystem_PID::step(double w)
     {
-        DT::RegulatorResponse reg_res = pid_regulator->step(w, previous_y);
+        DT::RegulatorResponse reg_res = pid_regulator->step(w, prev_y);
         double y = system->step(reg_res.u);
-        previous_y = y;
+        prev_y = y;
         return {reg_res.e, reg_res.u, y};
     }
 
@@ -184,11 +175,11 @@ namespace DT
 
     DT::ClosedLoopStepResponse ClosedLoopSystem_PIV::step(double w)
     {
-        DT::RegulatorResponse reg_res = piv_regulator->step(w, previous_y, previous_iy);
+        DT::RegulatorResponse reg_res = piv_regulator->step(w, prev_y, prev_iy);
         double y = system->step(reg_res.u);             // y  - speed
         double iy = output_integrator->step(y);         // iy - position
-        previous_y = y;
-        previous_iy = iy;
+        prev_y = y;
+        prev_iy = iy;
         return {reg_res.e, reg_res.u, iy};
     }
 }
